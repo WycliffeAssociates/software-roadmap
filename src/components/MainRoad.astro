@@ -1,0 +1,21 @@
+---
+import RoadSvg from "@svgs/RoadSvg.astro";
+---
+
+<div class="road-svg-window">
+  <RoadSvg />
+</div>
+
+<style>
+  .road-svg-window {
+    position: absolute;
+    top: 0;
+    left: 35%;
+    width: 127px;
+    height: 100vh;
+    overflow: visible;
+    display: block;
+    z-index: 10;
+    pointer-events: none;
+  }
+</style>

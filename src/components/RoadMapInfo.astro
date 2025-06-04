@@ -1,0 +1,35 @@
+---
+import Legend from "@components/Legend.astro";
+import Toc from "@components/Toc.astro";
+---
+
+<div class="roadMap-info">
+  <Legend />
+  <Toc />
+</div>
+
+<style>
+  .roadMap-info {
+    display: none;
+  }
+  .roadMap-info :global(.legend),
+  .roadMap-info :global(.toc) {
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    border: solid 2px #dfdfdf;
+    color: var(--data-contrast);
+  }
+  @media screen and (min-width: 1200px) {
+    .roadMap-info {
+      gap: 2rem;
+      display: flex;
+      flex-direction: column;
+      margin-inline-end: 16px;
+      position: absolute;
+      top: 32px;
+      right: 0;
+      z-index: 100;
+    }
+  }
+</style>

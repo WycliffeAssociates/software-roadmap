@@ -1,0 +1,14 @@
+---
+import {htmlVars} from "@src/htmlVars";
+import Section from "@components/SectionContainer.astro";
+---
+
+{
+  Object.entries(htmlVars).map(([index, sectionVars]) => (
+    <Section
+      index={index}
+      steps={sectionVars.numSteps}
+      sectionVars={sectionVars}
+    />
+  ))
+}

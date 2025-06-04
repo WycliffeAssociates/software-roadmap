@@ -1,0 +1,16 @@
+---
+import type {SectionVarType} from "@src/htmlVars";
+import {Section} from "./Section";
+
+interface Props {
+  index: string;
+  steps: string;
+  sectionVars: SectionVarType;
+}
+const {index, steps, sectionVars} = Astro.props;
+---
+
+<Section index={index} sectionVars={sectionVars} />
+<style>
+  .
+</style>

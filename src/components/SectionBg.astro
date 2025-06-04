@@ -1,0 +1,30 @@
+---
+import type {SectionVarType} from "@src/htmlVars";
+
+interface Props {
+  index: string;
+  steps: string;
+  sectionVars: SectionVarType;
+}
+const {index, steps, sectionVars} = Astro.props;
+const bgColor = sectionVars.colorRgbVals;
+---
+
+<div
+  data-js="section-bg"
+  class=`section-bg section-bg-${index}`
+  data-steps={steps}
+  style="--data-color: 211, 232, 255; --data-steps: 8"
+>
+</div>
+
+<style define:vars={{bgColor, steps}}>
+  .section-bg {
+    --_bg-color: rgba(var(--bgColor), 1);
+    background-color: var(--_bg-color);
+    height: calc(var(--steps) * 100vh + 100vh);
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+  }
+</style>

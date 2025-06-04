@@ -1,16 +1,38 @@
 ---
-
+import "../style.css";
+import Hero from "@components/Hero.astro";
+import RoadMapInfo from "@components/RoadMapInfo.astro";
+import MainRoad from "@components/MainRoad.astro";
+import SectionBgs from "@components/SectionBgs.astro";
+import Sections from "@components/Sections.astro";
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Software Roadmap - Bible in Every Language</title>
+  </head>
+  <body>
+    <Hero />
+    <div class="roadMap">
+      <RoadMapInfo />
+      <MainRoad />
+      <SectionBgs />
+      <Sections />
+    </div>
+  </body>
 </html>
+
+<style>
+  .roadMap {
+    position: relative;
+  }
+</style>
+
+<script>
+  import {initAllAnimations} from "@scripts/animate";
+  initAllAnimations();
+</script>

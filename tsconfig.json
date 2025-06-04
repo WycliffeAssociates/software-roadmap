@@ -1,13 +1,36 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-"exclude": [
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
     "dist"
-],
-"compilerOptions": {
+  ],
+  "compilerOptions": {
     "types": [
-        "./worker-configuration.d.ts",
-        "node"
-    ]
-}
+      "./worker-configuration.d.ts",
+      "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@types": [
+        "./src/types.ts"
+      ],
+      "@src/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@svgs/*": [
+        "./src/svgs/*"
+      ],
+      "@scripts/*": [
+        "./src/scripts/*"
+      ]
+    },
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
+  }
 }

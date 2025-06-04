@@ -1,0 +1,31 @@
+---
+import YieldSign from "@svgs/Yield.svg";
+---
+
+<div class="legend">
+  <h2>Legend</h2>
+  <span class="inDev">
+    <YieldSign />
+    <span>Products in development</span>
+  </span>
+</div>
+
+<style>
+  h2 {
+    border-bottom: solid #d3d3d3 1px;
+    padding-block-end: 0.5rem;
+    margin-block-end: 0.5rem;
+  }
+  .inDev {
+    margin-block-start: 0.5rem;
+    display: flex;
+    gap: 1rem;
+    padding: 0.25rem 1rem;
+    background: #feeed8;
+    border-radius: 8px;
+    color: #944300;
+  }
+  .legend {
+    color: #40404b;
+  }
+</style>

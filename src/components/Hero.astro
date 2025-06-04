@@ -1,0 +1,55 @@
+---
+import WaLogo from "@svgs/WaLogo.svg";
+import HeroRoad from "@svgs/HeroRoad.astro";
+---
+
+<header class="hero" data-js="hero">
+  <WaLogo />
+  <h1>Software Roadmap</h1>
+  <p>
+    Follow the road to see the how Wycliffe Associate aids in Bible Translation
+  </p>
+  <a href="#section1" class="seeMore">
+    <span>Get started</span>
+  </a>
+  <HeroRoad />
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    height: 90vh;
+    gap: 3rem;
+    align-items: center;
+    padding: 48px 0;
+    color: #fff;
+    background: var(--hero-bg-color);
+    position: relative;
+    z-index: 100;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+  }
+  h1 {
+    font-size: 3rem;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .seeMore {
+    display: flex;
+    gap: 16px;
+    padding: 0.625rem;
+    border: solid rgba(63, 61, 86, 1) 2px;
+    background: #fff;
+    align-items: center;
+    border-radius: 8px;
+    color: #3f3d56;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 2px 2px 0 0 rgba(63, 61, 86, 1);
+  }
+  .seeMore:active {
+    transform: scale(0.98);
+  }
+</style>

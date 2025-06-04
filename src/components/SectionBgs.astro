@@ -1,0 +1,22 @@
+---
+import {htmlVars} from "@src/htmlVars";
+import SectionBg from "@components/SectionBg.astro";
+---
+
+<div class="section-bgs">
+  {
+    Object.entries(htmlVars).map(([index, sectionVars]) => (
+      <SectionBg
+        index={index}
+        steps={sectionVars.numSteps}
+        sectionVars={sectionVars}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .section-bgs {
+    pointer-events: none;
+  }
+</style>
