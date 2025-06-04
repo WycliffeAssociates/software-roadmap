@@ -11,7 +11,8 @@ export function InfraSectionContent() {
       <div class="infraGridDeco">
         <InfraDecoSvg />
       </div>
-      <svg
+      <div class="boxBorder"></div>
+      {/* <svg
         class="infraRoadSvg"
         viewBox="0 0 849 355"
         fill="none"
@@ -27,7 +28,7 @@ export function InfraSectionContent() {
           stroke-linecap="round"
           stroke-dasharray="1 15"
         />
-      </svg>
+      </svg> */}
     </div>
   );
 }
