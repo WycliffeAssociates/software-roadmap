@@ -224,22 +224,26 @@ const content: ContentType = {
     steps: {
       1: {
         title: "Step 1: <br /> Quality Assessment Guide",
-        description: shorterLorem,
+        description:
+          "The QAG serves as a rubric by which the translation team evaluates each chapter for specific qualities, such as accuracy, faithfulness, historical appropriateness, clarity, naturalness, correct style, grammar, and spelling. ",
         tools: [tools.greekWords, tools.rag, tools.collab],
       },
       2: {
         title: "Step 2: <br /> Reviewer's Guide",
-        description: defaultLorem,
+        description:
+          "The Reviewers’ Guide introduces community checking. Each passage is accompanied by background information and a set of comprehension questions.  Participants’ answers guide further revision.",
         tools: [tools.doc, tools.passages],
       },
       3: {
         title: "Step 3: <br /> Spiritual Terms Evaluation Tools",
-        description: shorterLorem,
+        description:
+          "The STET focuses on theological consistency. It includes approximately 100 core spiritual terms drawn from our open-source Greek lexicon, with examples of their usage across the New Testament. The goal is to maintain doctrinal integrity and semantic precision throughout the translation with these terms.",
         tools: [tools.stet, tools.doc],
       },
       4: {
         title: "Step 4: <br /> Proofreading",
-        description: longLorem,
+        description:
+          "The final step in the refinement process is a detailed checklist featuring a chapter-by-chapter review of capitalization, punctuation, formatting, grammar, and layout, especially useful when typing has been done later in the process.",
         tools: [tools.wordAnalysis],
       },
     },
@@ -247,7 +251,7 @@ const content: ContentType = {
   3: {
     steps: {
       1: {
-        title: "Step 1: <br /> Quality Assessment Guide",
+        title: "Step 1: <br /> Repo Consolidation",
         description: shorterLorem,
         tools: [
           tools.biel,
@@ -258,7 +262,7 @@ const content: ContentType = {
         ],
       },
       2: {
-        title: "Step 2: <br /> Reviewer's Guide",
+        title: "Step 2: <br /> Pre-Publication Refinement",
         description: defaultLorem,
         tools: [
           tools.ptxPrint,
@@ -268,7 +272,7 @@ const content: ContentType = {
         ],
       },
       3: {
-        title: "Step 3: <br /> Spiritual Terms Evaluation Tools",
+        title: "Step 3: <br /> Publication",
         description: shorterLorem,
         tools: [
           tools.audioBiel,

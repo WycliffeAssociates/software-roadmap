@@ -26,6 +26,7 @@ function dataJsQuerySelector(selector: string, all?: boolean) {
 let globalSectionStarts: {
   [key: number]: number;
 } | null = null;
+let globalInfraEllipse: SVGEllipseElement | null | undefined = null;
 const noTranslation = {
   translateX: 0,
   translateY: 0,
@@ -48,7 +49,10 @@ const translateYMagicNumber = 0.3;
 function initAllAnimations() {
   const {sectionStarts} = initialJsGsapSets();
   globalSectionStarts = sectionStarts;
+  const infraEllipse = drawEllipseAroundInfra();
+  globalInfraEllipse = infraEllipse;
   initToc();
+  smoothScrollGetStarted();
   initHeroRoad();
   ScrollTriggerSections();
 }
@@ -108,7 +112,7 @@ function initHeroRoad() {
   ScrollTrigger.create({
     trigger: "[data-js='hero']",
     start: "1%",
-    markers: true,
+    markers: import.meta.env.DEV,
     onEnter: () => {
       gsap.to(heroPath, {
         drawSVG: "100%",
@@ -233,7 +237,7 @@ function ScrollTriggerSections() {
           });
           gsap.set(".roadMap-info", {
             position: "absolute",
-            top: "32px",
+            top: "16px",
           });
         }
       },
@@ -243,8 +247,15 @@ function ScrollTriggerSections() {
             position: "fixed",
           });
           gsap.set(".roadMap-info", {
-            top: "32px",
+            top: "16px",
             position: "fixed",
+          });
+        }
+        if (index == sections.length - 1 && globalInfraEllipse) {
+          gsap.to(globalInfraEllipse, {
+            drawSVG: "100%",
+            duration: 1,
+            ease: "power1.inOut",
           });
         }
 
@@ -587,6 +598,94 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
     );
   }
   sectionEnterTimeline.play();
+}
+
+function drawEllipseAroundInfra() {
+  const el = dataJsQuerySelector("infraGrid") as HTMLElement;
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const svgNS = "http://www.w3.org/2000/svg";
+
+  // Create SVG
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute(
+    "style",
+    `
+    position: absolute;
+    top: 0;
+    left: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+    stroke-dasharray: 1 15;
+    z-index: -1;
+    stroke-linecap: round;
+  `
+  );
+
+  // Create Ellipse
+  const ellipse = document.createElementNS(svgNS, "ellipse");
+  const rx = rect.width / 2;
+  const ry = rect.height / 2;
+
+  ellipse.setAttribute("rx", rx.toString());
+  ellipse.setAttribute("ry", ry.toString());
+  ellipse.setAttribute("stroke", "#38383E");
+  ellipse.setAttribute("stroke-width", "7");
+  ellipse.setAttribute("fill", "none");
+
+  const defs = document.createElementNS(svgNS, "defs");
+  const mask = document.createElementNS(svgNS, "mask");
+  mask.setAttribute("id", "ellipseMask");
+  const clone = ellipse.cloneNode(true) as HTMLElement;
+  // do no transform the mask
+  ellipse.setAttribute(
+    "style",
+    `
+    transform: translateX(50%) translateY(50%);
+  `
+  );
+  clone.setAttribute("stroke", "white");
+  mask.appendChild(clone);
+  defs.appendChild(mask);
+  svg.appendChild(defs);
+  svg.appendChild(ellipse);
+  el.appendChild(svg);
+  ellipse.setAttribute("mask", "url(#ellipseMask)");
+
+  gsap.set(ellipse, {
+    drawSVG: "0%",
+  });
+  return ellipse;
+}
+
+function smoothScrollGetStarted() {
+  const getStartedBtn = document.querySelector(
+    ".hero .seeMore"
+  ) as HTMLAnchorElement;
+  if (!getStartedBtn) return;
+  getStartedBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    gsap
+      .timeline()
+      .to(window, {
+        scrollTo: "#section1",
+        duration: 0.3,
+      })
+      .to(
+        window,
+        {
+          scrollTo: () => {
+            return {
+              y: `${window.scrollY + 1}`,
+            };
+          },
+        },
+        ">"
+      );
+  });
 }
 
 export {initAllAnimations};
