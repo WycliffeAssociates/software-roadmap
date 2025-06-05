@@ -22,6 +22,8 @@ export type ToolType = {
   icon?: string | null;
   dataName: string;
   inProgress?: boolean | undefined;
+  description?: string;
+  linkOut?: string;
 };
 
 export const tools = {
@@ -29,43 +31,65 @@ export const tools = {
     title: "BTT Writer",
     icon: writerIcon,
     dataName: "writer",
+    description:
+      "Writer is a cross-platform desktop and Android application for translating the Bible offline.",
+    linkOut: "https://bibleineverylanguage.org/software/writer/",
   },
   recorder: {
     title: "BTT Recorder",
     icon: recorderIcon,
     dataName: "recorder",
+    description:
+      "Recorder provides an intuitive solution for using Android devices to begin orally translating the Bible into a heart language for people who are not comfortable with technology.",
+    linkOut: "https://bibleineverylanguage.org/software/recorder/",
   },
   orature: {
     title: "Orature",
     icon: oratureIcon,
     dataName: "orature",
+    description:
+      "Orature is a desktop application that provides an accessible way for the Global Church to produce church-owned oral and audio Scripture. It streamlines the translation and narration process for tech-hesitant translators.",
+    linkOut: "https://bibleineverylanguage.org/software/orature/",
   },
   vmast: {
     title: "V-MAST",
     icon: vmastIcon,
     dataName: "vmast",
+    description:
+      "V-MAST is a virtual online program that allows a translator to collaborate with others to draft and check their translation using the MAST methodology.",
+    linkOut: "https://bibleineverylanguage.org/software/v-mast/",
   },
   doc: {
     title: "DOC",
     icon: docIcon,
     dataName: "doc",
+    description:
+      "This tool allows you to download Scripture in one or two languages, optionally combined with resources such as Translation Notes used in the translation checking process (described on Resources page).",
+    linkOut: "https://doc.bibleineverylanguage.org/languages",
   },
   nllb: {
     title: "No Language Left Behind",
     icon: yieldIcon,
     dataName: "nllb",
     inProgress: true,
+    description: "",
+    linkOut: "",
   },
   greekWords: {
     title: "Greek Words for Translators",
     icon: greekWordsIcon,
     dataName: "gwt",
+    description:
+      "This is a simple English/Greek lexicon. It gives translators information about the meaning of words in the original language of the New Testament.",
+    linkOut: "https://gwt.bibleineverylanguage.org/",
   },
   rag: {
     title: "Retrieval-Augmented Generation",
     icon: yieldIcon,
     dataName: "rag",
     inProgress: true,
+    description:
+      "We are exploring how RAG (Retrieval-Augmented Generation) can be used to augment the resources available to translators during the translation process.",
   },
   collab: {
     title: "Collaborative Refinement Tool",
@@ -93,47 +117,75 @@ export const tools = {
   biel: {
     title: "Bible In Every Language",
     dataName: "biel",
+    description:
+      "Bible In Every Language (BIEL) is our site for finding the various software, learning about our processes, and finding resources either for translations or final products of translations.",
+    linkOut: "https://bibleineverylanguage.org",
   },
   liveReader: {
     title: "Live Reader",
     dataName: "reader",
+    description:
+      "During the translation process, it's sometimes helpful to be able to read the current work in progress as a whole, so this site provides a view of a translation project as it currently stands in a readable format.",
   },
   port: {
     title: "PORT",
     dataName: "port",
+    description: "PORT is a tool we use to manage our translation projects.",
   },
   sab: {
     title: "Scripture App Builder",
     dataName: "sab",
+    description:
+      "Scripture App Builder is a tool that allows us to create Android applications for offline reading of finished translations.",
   },
   wacs: {
     title: "WACS",
     dataName: "wacs",
+    description:
+      "Wycliffe Associates Content Service is our cloud storage for keeping translation work in progress backed up and broadly accessible.",
+    linkOut: "https://content.bibletranslationtools.org/",
   },
   ptxPrint: {
     title: "PTXprint",
     dataName: "ptxPrint",
+    description:
+      "PTXprint is a tool that facilitates the typesetting and formatting of finished translations for printing and distribution.",
   },
   usfmConverter: {
     title: "USFM Converter",
     dataName: "usfmConverter",
     icon: usfmConverterIcon,
+    description:
+      "Most scripture is written in a markup language called United Standard Format Markers (USFM).  USFM Converter is a tool that allows us to convert between USFM and other formats.",
+    linkOut: "https://bibleineverylanguage.org/software/usfm-converter/",
   },
   usfmLinter: {
     title: "USFM Linter",
     dataName: "usfmLinter",
+    description:
+      "USFM Linter is a tool that allows us to check USFM for common errors, such as missing or incorrect markup, or for missing or incorrect text.",
   },
   audioBiel: {
     title: "Audio BIEL",
     dataName: "audioBiel",
+    description:
+      "Audio BIEL (Bible In Every Language) houses our audio used as source material in oral translation projects as well as some finished translations.",
+    linkOut: "https://audio.bibleineverylanguage.org/",
   },
   dotApp: {
     title: "DOT App",
     dataName: "dotApp",
+    description:
+      "This is our app for consuming the translations produced by our Deaf Owned Translation (DOT) process.  It's available for iOS and Android as Sign Language Bible. It allows for saving videos for offline watching.",
+    linkOut:
+      "https://play.google.com/store/apps/details?id=com.slbible.dotapp&hl=en_US",
   },
   dotWeb: {
     title: "DOT Website",
     dataName: "dotWeb",
+    description:
+      "This is our website for consuming the translations produced by our Deaf Owned Translation (DOT) process.",
+    linkOut: "https://slbible.com/",
   },
   textToSpeechGen: {
     title: "Text-to-Speech Generator",
@@ -143,6 +195,8 @@ export const tools = {
     title: "Handwriting Text Recognition",
     dataName: "handwritingRecognition",
     icon: yieldIcon,
+    description:
+      "Translation work is sometimes still done via hand where technology is not available or conducive to use. We are experimenting with ways to digitize this handwritten text to speed up the production process as well as have the translation data available for safe keeping.",
   },
 };
 

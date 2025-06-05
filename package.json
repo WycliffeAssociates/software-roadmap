@@ -11,8 +11,10 @@
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
+		"@ark-ui/solid": "^5.11.0",
 		"@astrojs/cloudflare": "^12.5.3",
 		"@astrojs/solid-js": "^5.1.0",
+		"@solid-primitives/event-listener": "^2.4.1",
 		"astro": "^5.8.2",
 		"gsap": "^3.13.0",
 		"solid-js": "^1.9.7"

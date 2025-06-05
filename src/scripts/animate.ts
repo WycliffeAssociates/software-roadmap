@@ -16,6 +16,9 @@ gsap.registerPlugin(
   GSDevTools,
   ScrollToPlugin
 );
+// opt in to non intrusive js thread scroll jacking
+ScrollTrigger.normalizeScroll(true);
+
 function dataJsQuerySelector(selector: string, all?: boolean) {
   if (all) {
     return document.querySelectorAll(`[data-js="${selector}"]`);
@@ -379,7 +382,6 @@ function drawCircleOnRoad(step: {drawn: boolean}) {
     cx: point.x.toString(),
     cy: point.y.toString(),
   });
-  console.log(dot, roadSvg);
   roadSvg.appendChild(dot);
   stepDotEls.push(dot);
   step.drawn = true;
@@ -521,6 +523,7 @@ function getNewStepTool(
   const newLiTool = document.createElement("li");
   newLiTool.setAttribute("class", "step-tool");
   newLiTool.setAttribute("data-tool-name", toolDataName);
+  newLiTool.setAttribute("data-js", "step-tool");
   newLiTool.innerHTML = `
     <div class="step-tool-inner ${inProgress ? "inProgress" : ""}">
   <span class="step-tool-icon">

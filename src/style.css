@@ -2,6 +2,7 @@
   --hero-road-stroke: #545461;
   --hero-bg-color: #656478;
   --circle-stroke: #2d709d;
+  --tool-detail-contrast: #fff;
 }
 
 * {
@@ -109,9 +110,12 @@ body {
   width: min(100%, 33ch);
   text-align: center;
   display: inline-flex;
-  /* todo */
-  /* height: 4rem;  */
-  /* height: auto; */
+  transition: background-color 0.1s ease-in-out;
+  cursor: pointer;
+}
+.step-tool:hover {
+  background: rgba(var(--data-color), 1);
+  /* color: #fff; */
 }
 .step-tool-inner {
   display: flex;
@@ -123,6 +127,7 @@ body {
 .step-tool-inner.inProgress {
   background: #feeed8;
   color: #944300;
+  padding: 0 0.25rem;
 }
 .step-tool-icon {
   width: 18px;
@@ -267,6 +272,57 @@ body {
 .infraRoadSvg {
   position: absolute;
   z-index: -1;
+}
+
+/* Tool Popup */
+.tool-popup,
+.tool-popup-positioner {
+  z-index: 999;
+  pointer-events: none;
+  background: white;
+  border-radius: 8px;
+  min-height: fit-content !important;
+}
+.tool-popup-positioner {
+  transform: translate(-50%, -50%);
+}
+.tool-popup {
+  border: solid 2px var(--tool-detail-contrast);
+  padding: 0.5rem;
+}
+.tool-popup-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #40404b;
+  min-height: fit-content;
+  height: 100%;
+}
+.tool-popup-body a {
+  margin-block-start: auto;
+  display: inline-block;
+}
+.step-tool.open {
+  background: var(--data-contrast);
+  border: solid 2px var(--data-contrast);
+  color: #fff;
+  transition: background-color 0.15s ease-in-out;
+}
+.step-tool.open .inProgress {
+  background: var(--data-accent);
+  color: #fff;
+  transition: background-color 0.15s ease-in-out;
+}
+.step-tool.open :where(path[fill="currentColor"]) {
+  fill: #fff;
+}
+
+.step-tool.open path[fill]:not(path[fill="currentColor"]) {
+  fill: var(--data-contrast);
+}
+.step-tool.open path[stroke]:not(path[stroke="currentColor"]) {
+  stroke: var(--data-contrast);
 }
 
 @media screen and (min-width: 500px) {

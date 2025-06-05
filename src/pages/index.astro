@@ -5,6 +5,7 @@ import RoadMapInfo from "@components/RoadMapInfo.astro";
 import MainRoad from "@components/MainRoad.astro";
 import SectionBgs from "@components/SectionBgs.astro";
 import Sections from "@components/Sections.astro";
+import {ToolDetail} from "@components/ToolDetail";
 ---
 
 <html lang="en">
@@ -22,6 +23,7 @@ import Sections from "@components/Sections.astro";
       <MainRoad />
       <SectionBgs />
       <Sections />
+      <ToolDetail client:load />
     </div>
   </body>
 </html>
