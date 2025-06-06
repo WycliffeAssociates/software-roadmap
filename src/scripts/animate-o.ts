@@ -7,7 +7,6 @@ import {Flip} from "gsap/Flip";
 import {GSDevTools} from "gsap/GSDevTools";
 import {ScrollToPlugin} from "gsap/ScrollToPlugin";
 import {content, type ToolType} from "@src/content";
-import {Index} from "solid-js";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -18,23 +17,23 @@ gsap.registerPlugin(
   ScrollToPlugin
 );
 // opt in to non intrusive js thread scroll jacking
-// ScrollTrigger.normalizeScroll(true);
-// gsap.defaults({overwrite: true});
+ScrollTrigger.normalizeScroll(true);
 
+function dataJsQuerySelector(selector: string, all?: boolean) {
+  if (all) {
+    return document.querySelectorAll(`[data-js="${selector}"]`);
+  }
+  return document.querySelector(`[data-js="${selector}"]`);
+}
 // global state:
 let globalSectionStarts: {
   [key: number]: number;
 } | null = null;
 let globalInfraEllipse: SVGEllipseElement | null | undefined = null;
-let globalIsAnimating = false;
 const noTranslation = {
   translateX: 0,
   translateY: 0,
 } as const;
-let globalStepTracker = {
-  sectionIdx: 0,
-  stepIdx: 0,
-};
 const sections = dataJsQuerySelector(
   "section",
   true
@@ -43,13 +42,40 @@ const roadSvg = dataJsQuerySelector("road-svg") as SVGSVGElement;
 const maskPath = dataJsQuerySelector("maskPath") as SVGPathElement;
 const roadPath = dataJsQuerySelector("roadPath") as SVGSVGElement;
 const stepDotEls: Array<SVGCircleElement> = [];
-let globalTotalProgress = 0;
-const globalTotalLength = maskPath.getTotalLength();
-const globalSvgViewBoxHeight = roadSvg.viewBox.baseVal.height;
-const globalFullVhUnitInSvgTerms = window.innerHeight / globalSvgViewBoxHeight;
-const globalInitialTail = globalFullVhUnitInSvgTerms * 5; //i.e. 3%
-const globalTranslateYMagicNumber = 0.3;
-const globalIsTouch = ScrollTrigger.isTouch;
+let totalProgress = 0;
+const totalLength = maskPath.getTotalLength();
+const svgViewBoxHeight = roadSvg.viewBox.baseVal.height;
+const lvhCheckEl = document.querySelector(".lvhCheck") as HTMLElement;
+const lvhHeight = lvhCheckEl.getBoundingClientRect().height;
+console.log(lvhHeight);
+const windowInnerHeight = lvhHeight;
+console.log(windowInnerHeight);
+const fullVhUnitInSvgTerms = windowInnerHeight / svgViewBoxHeight;
+const initialTail = fullVhUnitInSvgTerms * 5; //i.e. 3%
+const translateYMagicNumber = 0.3;
+
+const getSectionHeightMultiplier = () => {
+  if (window.innerWidth > 1024) {
+    return 1;
+  } else if (window.innerWidth > 768) {
+    return 0.6;
+  } else {
+    return 0.2;
+  }
+};
+const getSectionEndPx = (steps: number) => {
+  const multiplier = getSectionHeightMultiplier();
+  const pxVal = steps * windowInnerHeight * multiplier;
+  return pxVal;
+  // if (window.innerWidth > 1024) {
+  //   return steps * windowInnerHeight;
+  // } else if (window.innerWidth > 768) {
+  //   return steps * windowInnerHeight * .6;
+  // }
+  // else {
+  //   return steps * windowInnerHeight * .3;
+  // }
+};
 
 function initAllAnimations() {
   const {sectionStarts} = initialJsGsapSets();
@@ -85,7 +111,7 @@ function initToc() {
       const sectionY = globalSectionStarts[topIdx]; //a vh value:
       const stepY = 0 * 100;
       const totalY = sectionY + stepY;
-      const asPx = (totalY / 100) * window.innerHeight + heroHeight + 1;
+      const asPx = (totalY / 100) * windowInnerHeight + heroHeight + 1;
       gsap.to(window, {
         scrollTo: `${asPx}`,
         // duration: 0.3,
@@ -99,7 +125,7 @@ function initToc() {
         const sectionY = globalSectionStarts[topIdx]; //a vh value:
         const stepY = subIdx * 100;
         const totalY = sectionY + stepY;
-        const asPx = (totalY / 100) * window.innerHeight + heroHeight + 1;
+        const asPx = (totalY / 100) * windowInnerHeight + heroHeight + 1;
         gsap.to(window, {
           scrollTo: `${asPx}`,
           duration: 0.1,
@@ -129,7 +155,7 @@ function initHeroRoad() {
 }
 
 function initialJsGsapSets() {
-  gsap.set([maskPath], {drawSVG: `${globalInitialTail}%`});
+  gsap.set([maskPath], {drawSVG: `${initialTail}%`});
 
   gsap.set(dataJs("step-header"), {
     autoAlpha: "0",
@@ -148,38 +174,22 @@ function initialJsGsapSets() {
     true
   ) as NodeListOf<HTMLElement>;
   sectionBgs.forEach((sectionBg, idx) => {
-    sectionBg.style.top = `${totalTop}vh`;
+    sectionBg.style.top = `${totalTop}px`;
     const steps = sectionBg.dataset.steps;
     if (!steps) return;
+    const multiplier = getSectionHeightMultiplier();
+
+    const addlHeight = multiplier * windowInnerHeight;
+    // debugger;
+    const height = getSectionEndPx(parseInt(steps)) + windowInnerHeight;
+    console.log(`section ${idx} height: ${height}`);
+    sectionBg.style.height = height + "px";
     sectionStarts[idx] = totalTop;
-    totalTop += parseInt(steps) * 100 + 100;
+    totalTop += height;
   });
   return {sectionStarts};
 }
-type GlobalStepPcts = {
-  [index: number]: {
-    [step: number]: number;
-  };
-};
-const globalStepPctsOfTotalProgress = [...sections].reduce(
-  (acc: GlobalStepPcts, section, sectionIdx) => {
-    const steps = parseInt(section.dataset.steps || "1");
-    const stepPct = 90 / steps;
-    acc[sectionIdx] = {};
-    for (let i = 1; i <= steps; i++) {
-      // what's the percentage of the total road for this step
-      const sectBase = (sectionIdx / sections.length) * 100;
-      const thisStepPct = (((i - 1) / steps) * 100) / sections.length;
-      const amt = sectBase + thisStepPct;
-      // const stepBase = i / steps;
-      // const total = sectBase + stepBase;
-      // acc[sectionIdx][i] = total;
-      acc[sectionIdx][i] = amt;
-    }
-    return acc;
-  },
-  {}
-);
+
 function ScrollTriggerSections() {
   sections.forEach((section, index) => {
     const steps = parseInt(section.dataset.steps || "1");
@@ -193,29 +203,31 @@ function ScrollTriggerSections() {
       const stepVal = Math.floor((i + 1) * stepPct);
       stepDots[stepVal] = {drawn: false};
     }
-    const sectionScrollTrigger = ScrollTrigger.create({
+    const end = `${steps * getSectionHeightMultiplier() * 100}%`;
+    console.log(`section ${index} end: ${end}`);
+    ScrollTrigger.create({
       trigger: section,
       start: "top top",
-      anticipatePin: 1,
-      end: `${steps * 100}%`, // Each step adds 100px to the scroll length for this section
+      end, // Each step adds 100vh to the scroll length for this section
       pin: true,
-      scrub: 0.1,
-
+      scrub:
+        window.innerWidth > 1100 ? 0.3 : window.innerWidth > 768 ? 0.5 : 0.8,
+      anticipatePin: 1,
+      fastScrollEnd: true,
+      // invalidateOnRefresh: true,
+      // preventOverlaps: true,
+      markers: import.meta.env.DEV,
       onUpdate: (self) => {
-        if (globalIsTouch) {
-          return; //observer will handle
-        }
         // noop the last section
         if (index == sections.length - 1) {
           return;
         }
         const progress = getSectionProgress(self, index, sections.length);
-        const doDrawRoad = progress.asPercentOfTotalRoad > globalTotalProgress;
+        const doDrawRoad = progress.asPercentOfTotalRoad > totalProgress;
         // Only draw forwards
-        if (progress.asPercentOfTotalRoad > globalTotalProgress) {
-          globalTotalProgress = progress.asPercentOfTotalRoad;
+        if (progress.asPercentOfTotalRoad > totalProgress) {
+          totalProgress = progress.asPercentOfTotalRoad;
         }
-
         // Check if a step dot should be drawn at this progress point
         const step = stepDots[progress.floored];
         if (step && !step.drawn && doDrawRoad) {
@@ -231,6 +243,7 @@ function ScrollTriggerSections() {
         if (header && trackedStep !== currentStep) {
           const step = content[index]!.steps[currentStep];
           trackedStep = currentStep;
+          // Batch DOM updates
           updateTitle(section, step.title, step.description);
           updateTools(section, step.tools);
         }
@@ -238,15 +251,14 @@ function ScrollTriggerSections() {
         // Draw the road as needed:
         // This logic determines how much of the main path is visible within the mask
         const currentTotalProgress = (self.progress + index) / sections.length;
-        const targetPathLength = currentTotalProgress * globalTotalLength;
-        const drawPercent = (targetPathLength / globalTotalLength) * 100;
-        const ratio =
-          (window.innerHeight * sections.length) / globalSvgViewBoxHeight;
+        const targetPathLength = currentTotalProgress * totalLength;
+        const drawPercent = (targetPathLength / totalLength) * 100;
+        const ratio = (windowInnerHeight * sections.length) / svgViewBoxHeight;
         const asRatioOfWindowHeight = drawPercent * ratio;
 
         if (doDrawRoad) {
           gsap.to(maskPath, {
-            drawSVG: `0 ${Math.max(asRatioOfWindowHeight, globalInitialTail)}%`,
+            drawSVG: `0 ${Math.max(asRatioOfWindowHeight, initialTail)}%`,
             overwrite: true, // Prevent conflicts if multiple tweens try to control drawSVG
           });
         }
@@ -254,9 +266,9 @@ function ScrollTriggerSections() {
         // Animate the vertical position of the entire `roadSvg`
         if (progress.outOf100 > 70 && index < sections.length - 1) {
           const indexAdjustSvgToVhPct =
-            (window.innerHeight / globalSvgViewBoxHeight) * 100 * index;
+            (windowInnerHeight / svgViewBoxHeight) * 100 * index;
           const sectionProgressContribution =
-            progress.progressInSection * globalTranslateYMagicNumber; //.3 is arbitrary / magic number to make it look good
+            progress.progressInSection * translateYMagicNumber; //.3 is arbitrary / magic number to make it look good
           const targetRoadYPct =
             indexAdjustSvgToVhPct + sectionProgressContribution;
           gsap.to(roadSvg, {
@@ -266,42 +278,28 @@ function ScrollTriggerSections() {
         }
       },
       onLeaveBack: () => {
-        let tl = gsap.timeline({
-          onComplete: () => {
-            section.dataset.stEntered = "false";
-          },
-        });
         if (index == 0) {
-          tl.set(".road-svg", {
+          gsap.set(".road-svg", {
             position: "static",
           });
-          tl.set(".roadMap-info", {
+          gsap.set(".roadMap-info", {
             position: "absolute",
             top: "16px",
           });
         }
       },
       onEnter: () => {
-        globalStepTracker = {
-          sectionIdx: index,
-          stepIdx: 1,
-        };
-        let tl = gsap.timeline({
-          onComplete: () => {
-            section.dataset.stEntered = "true";
-          },
-        });
         if (index == 0) {
-          tl.set(".road-svg", {
+          gsap.set(".road-svg", {
             position: "fixed",
           });
-          tl.set(".roadMap-info", {
+          gsap.set(".roadMap-info", {
             top: "16px",
             position: "fixed",
           });
         }
         if (index == sections.length - 1 && globalInfraEllipse) {
-          tl.to(globalInfraEllipse, {
+          gsap.to(globalInfraEllipse, {
             drawSVG: "100%",
             duration: 1,
             ease: "power1.inOut",
@@ -310,16 +308,13 @@ function ScrollTriggerSections() {
 
         const dataContrast = section.getAttribute("data-contrast");
         if (dataContrast) {
-          tl.to(
-            roadPath,
-            {
+          gsap
+            .timeline()
+            .to(roadPath, {
               stroke: dataContrast,
               duration: 0.5,
-            },
-            "<"
-          );
-          if (stepDotEls.length > 0) {
-            tl.to(
+            })
+            .to(
               stepDotEls,
               {
                 stroke: dataContrast,
@@ -333,30 +328,20 @@ function ScrollTriggerSections() {
               },
               "<"
             );
-          }
         }
 
         sectionEntranceAnimations(section);
       },
       onEnterBack: () => {
-        globalStepTracker = {
-          sectionIdx: index,
-          stepIdx: steps,
-        };
-
-        let tl = gsap.timeline({
-          onComplete: () => {
-            section.dataset.stEntered = "true";
-          },
-        });
         const dataContrast = section.getAttribute("data-contrast");
         if (dataContrast) {
-          tl.to(roadPath, {
-            stroke: dataContrast,
-            duration: 0.5,
-          });
-          if (stepDotEls.length > 0) {
-            tl.to(
+          gsap
+            .timeline()
+            .to(roadPath, {
+              stroke: dataContrast,
+              duration: 0.5,
+            })
+            .to(
               stepDotEls,
               {
                 stroke: dataContrast,
@@ -370,11 +355,7 @@ function ScrollTriggerSections() {
               },
               "<"
             );
-          }
         }
-      },
-      onLeave: () => {
-        section.dataset.stEntered = "false";
       },
     });
 
@@ -393,13 +374,12 @@ function ScrollTriggerSections() {
         onUpdate: (self) => {
           // the prev section end will be
           const start =
-            globalFullVhUnitInSvgTerms * 100 * index * -1 -
-            globalTranslateYMagicNumber; //.3 is magic number
+            fullVhUnitInSvgTerms * 100 * index * -1 - translateYMagicNumber; //.3 is magic number
           // const start = gsap.getProperty(roadSvg, "y");
           //  the question is, I know where I'm starting, and how much more do I need to shift up so the svg is only about current section + initial showing?
           // i.e. slide up about 100vh totally with respect to svgViewBoxHeight
-          const indexAdjustVh = globalFullVhUnitInSvgTerms * 100 * (index + 1); //+1 cause this is still in index of prev section but we are really between sections
-          const endYWithTailShowing = indexAdjustVh * -1 + globalInitialTail;
+          const indexAdjustVh = fullVhUnitInSvgTerms * 100 * (index + 1); //+1 cause this is still in index of prev section but we are really between sections
+          const endYWithTailShowing = indexAdjustVh * -1 + initialTail;
 
           const interpolatedYPct = gsap.utils.interpolate(
             Number(start),
@@ -413,50 +393,6 @@ function ScrollTriggerSections() {
         },
       });
     }
-
-    // Observer to handle touch devices cause the scrolling is not smooth on mobile and tablet and pinning is feeling weird there; And scrollbars don't always show
-    ScrollTrigger.observe({
-      target: section, // can be any element (selector text is fine)
-      type: "", // comma-delimited list of what to listen for ("wheel,touch,scroll,pointer")
-      tolerance: 5,
-      onUp: () => {
-        console.log("fire handle touches U");
-        const allow =
-          (ScrollTrigger.isTouch && import.meta.env.PROD) ||
-          import.meta.env.DEV;
-        if (!globalIsAnimating && allow) {
-          console.log("fire handle touches UP");
-          handleTouches({
-            dir: "UP",
-            section,
-            header,
-            stInstance: sectionScrollTrigger,
-            trackedStep,
-            index,
-            stepDots,
-            steps,
-          });
-        }
-      },
-      onDown: (p) => {
-        const allow =
-          (ScrollTrigger.isTouch && import.meta.env.PROD) ||
-          import.meta.env.DEV;
-        if (!globalIsAnimating && allow) {
-          console.log("fire handle touches DOWN");
-          handleTouches({
-            dir: "DOWN",
-            section,
-            header,
-            stInstance: sectionScrollTrigger,
-            trackedStep,
-            index,
-            stepDots,
-            steps,
-          });
-        }
-      },
-    });
   });
 }
 
@@ -571,6 +507,7 @@ export function updateTools(sectionEl: HTMLElement, newTools: Array<ToolType>) {
     },
     {keep: [], remove: []}
   );
+  // debugger;
   const initial = Flip.getState(stepToolsContainer);
 
   let tl = Flip.from(initial, {
@@ -580,22 +517,21 @@ export function updateTools(sectionEl: HTMLElement, newTools: Array<ToolType>) {
     paused: true,
     overwrite: true,
   });
-  if (remove.length) {
-    tl.to(
-      remove,
-      {
-        opacity: "0",
-        x: "10px",
-        duration: 0.25,
-        onComplete: () => {
-          remove.forEach((tool) => {
-            tool.remove();
-          });
-        },
+
+  tl.to(
+    remove,
+    {
+      opacity: "0",
+      x: "10px",
+      duration: 0.25,
+      onComplete: () => {
+        remove.forEach((tool) => {
+          tool.remove();
+        });
       },
-      ".2"
-    );
-  }
+    },
+    ".2"
+  );
 
   let newToolGroup: Array<HTMLElement> = [];
   newTools.forEach((tool) => {
@@ -613,13 +549,11 @@ export function updateTools(sectionEl: HTMLElement, newTools: Array<ToolType>) {
     }
   });
 
-  if (newToolGroup.length) {
-    tl.to(newToolGroup, {
-      x: "0px",
-      autoAlpha: 1,
-      duration: 0.25,
-    });
-  }
+  tl.to(newToolGroup, {
+    x: "0px",
+    autoAlpha: 1,
+    duration: 0.25,
+  });
 
   tl.play();
 }
@@ -698,7 +632,7 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
   }
 
   const stepTools = sectionEl.querySelectorAll(".step-tool");
-  if (stepTools.length) {
+  if (stepTools) {
     sectionEnterTimeline.to(
       stepTools,
       {
@@ -799,158 +733,6 @@ function smoothScrollGetStarted() {
         ">"
       );
   });
-}
-
-type HandleTouchesArgs = {
-  dir: "UP" | "DOWN";
-  stInstance: globalThis.ScrollTrigger;
-  index: number;
-  stepDots: {[key: number]: {drawn: boolean}};
-  steps: number;
-  header: HTMLElement;
-  trackedStep: number;
-  section: HTMLElement;
-};
-
-function handleTouches({
-  dir,
-  stInstance,
-  index,
-  stepDots,
-  steps,
-  header,
-  // trackedStep,
-  section,
-}: HandleTouchesArgs) {
-  if (!globalSectionStarts) return;
-
-  const isEntered = section.dataset.stEntered === "true";
-  if (!isEntered) {
-    return;
-  }
-
-  globalIsAnimating = true;
-  const progress = getSectionProgress(stInstance, index, sections.length);
-  const doDrawRoad = progress.asPercentOfTotalRoad >= globalTotalProgress;
-  // Only draw forwards
-  if (progress.asPercentOfTotalRoad >= globalTotalProgress) {
-    globalTotalProgress = progress.asPercentOfTotalRoad;
-  }
-  // todo: fix this for touch;
-  // Check if a step dot should be drawn at this progress point
-  const step = stepDots[progress.floored];
-  if (step && !step.drawn && doDrawRoad) {
-    drawCircleOnRoad(step);
-  }
-  const allSections = dataJsQuerySelector(
-    "section",
-    true
-  ) as NodeListOf<HTMLElement>;
-
-  let nextSectIdx;
-  let nextStepIdx;
-  let isBoundaryStep = false;
-  if (dir === "DOWN") {
-    nextStepIdx = globalStepTracker.stepIdx - 1;
-    nextSectIdx = globalStepTracker.sectionIdx;
-    if (nextStepIdx < 1) {
-      isBoundaryStep = true;
-      const prevSection = allSections[index - 1];
-      const lastStepPrevSection = parseInt(prevSection?.dataset?.steps!);
-      if (!lastStepPrevSection) {
-        stInstance.enable(false, false);
-        return;
-      }
-      nextStepIdx = lastStepPrevSection;
-      nextSectIdx = globalStepTracker.sectionIdx - 1;
-    }
-  } else {
-    // up:
-    nextStepIdx = globalStepTracker.stepIdx + 1;
-    nextSectIdx = globalStepTracker.sectionIdx;
-    if (nextStepIdx > steps) {
-      isBoundaryStep = true;
-      nextStepIdx = 1;
-      nextSectIdx = globalStepTracker.sectionIdx + 1;
-    }
-  }
-
-  if (nextSectIdx > sections.length - 1 || nextSectIdx < 0) {
-    return;
-  }
-  console.log(nextSectIdx, nextStepIdx);
-  globalStepTracker = {
-    sectionIdx: nextSectIdx,
-    stepIdx: nextStepIdx,
-  };
-  const skipEnter = dir === "DOWN" && nextStepIdx === 1;
-
-  if (header && !skipEnter) {
-    const step = content[index]!.steps[nextStepIdx];
-    if (!step) return;
-    // trackedStep = nextStepIdx;
-    updateTitle(section, step.title, step.description);
-    updateTools(section, step.tools);
-  }
-
-  const hero = dataJsQuerySelector("hero") as HTMLElement;
-  if (!hero || !allSections) return;
-  const swipeDur = 0.4;
-  let tl = gsap.timeline({
-    onComplete: () => {
-      globalIsAnimating = false;
-      stInstance.enable(false, false);
-    },
-    duration: swipeDur,
-  });
-  console.log({doDrawRoad});
-  if (doDrawRoad) {
-    // what's the drawSvg Percent for the next step: This will only apply to down:
-    // what's the totalProgress of next Step:
-
-    const totalProgressNextStep =
-      globalStepPctsOfTotalProgress[nextSectIdx][nextStepIdx];
-    const tgtPathLen = totalProgressNextStep * globalTotalLength;
-    const drawPct = tgtPathLen / globalTotalLength;
-    const ratio =
-      (window.innerHeight * sections.length) / globalSvgViewBoxHeight;
-    const asRatioWindowHeight = drawPct * ratio;
-    console.log(
-      `drawing to ${Math.max(asRatioWindowHeight, globalInitialTail)}%`
-    );
-    tl.to(maskPath, {
-      drawSVG: `0 ${Math.max(asRatioWindowHeight, globalInitialTail)}%`,
-      overwrite: true, // Prevent conflicts if multiple tweens try to control drawSVG
-      duration: swipeDur,
-    });
-  }
-  const sectY = globalSectionStarts[nextSectIdx];
-  const stepY = nextStepIdx * 100;
-  const totalY = sectY + stepY;
-  const asPx =
-    (totalY / 100) * window.innerHeight +
-    hero.getBoundingClientRect().height +
-    1;
-  console.log(`Scrolling to ${asPx}`);
-  const scrollTo = isBoundaryStep ? `#section${nextSectIdx + 1}` : `${asPx}`;
-  console.log(`Scrolling to ${scrollTo}`);
-  tl.to(
-    window,
-    {
-      scrollTo: scrollTo,
-      onStart: () => {
-        isBoundaryStep && stInstance.enable(false, false);
-      },
-      duration: isBoundaryStep ? 1 : swipeDur,
-    },
-    ">"
-  );
-}
-function dataJsQuerySelector(selector: string, all?: boolean) {
-  if (all) {
-    return document.querySelectorAll(`[data-js="${selector}"]`);
-  }
-  return document.querySelector(`[data-js="${selector}"]`);
 }
 
 export {initAllAnimations};

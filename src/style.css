@@ -17,6 +17,17 @@ body {
   overscroll-behavior-block: none;
 }
 
+.road-svg,
+.step-tool,
+.section-decorative {
+  will-change: transform;
+  transform: translateZ(0);
+}
+* {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
 /* writing these and not in style tags to avoid having to use the :globa modifier when these will be in a few places */
 .road-svg circle {
   fill: white;

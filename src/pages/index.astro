@@ -24,6 +24,7 @@ import {ToolDetail} from "@components/ToolDetail";
       <SectionBgs />
       <Sections />
       <ToolDetail client:load />
+      <div class="lvhCheck"></div>
     </div>
   </body>
 </html>
@@ -32,9 +33,18 @@ import {ToolDetail} from "@components/ToolDetail";
   .roadMap {
     position: relative;
   }
+  .lvhCheck {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100lvh;
+  }
 </style>
 
 <script>
   import {initAllAnimations} from "@scripts/animate";
-  initAllAnimations();
+  import {initAllAnimations as animateO} from "@scripts/animate-o";
+  // initAllAnimations();
+  animateO();
 </script>
