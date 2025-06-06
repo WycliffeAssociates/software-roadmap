@@ -306,7 +306,8 @@ const content: ContentType = {
     steps: {
       1: {
         title: "Step 1: <br /> Repo Consolidation",
-        description: shorterLorem,
+        description:
+          "We consolidate individual book repositories from BBT-Writer into a single USFM repo containing all the books. We also standardize usfm markers and file information.",
         tools: [
           tools.biel,
           tools.doc,
@@ -317,7 +318,8 @@ const content: ContentType = {
       },
       2: {
         title: "Step 2: <br /> Pre-Publication Refinement",
-        description: defaultLorem,
+        description:
+          "We run an automated process to identify possible versification, punctuation, and other editorial issues. The publication team collaborates with the field teams to resolve as many issues as possible.",
         tools: [
           tools.ptxPrint,
           tools.sab,
@@ -327,7 +329,8 @@ const content: ContentType = {
       },
       3: {
         title: "Step 3: <br /> Publication",
-        description: shorterLorem,
+        description:
+          "Most completed translations are available on Bible in Every Language and DOC. Once refined, Scripture products can be published in the format(s) desired by the language community. Formats include printed copies, text and/or audio apps, and sign language videos.",
         tools: [
           tools.audioBiel,
           tools.dotApp,

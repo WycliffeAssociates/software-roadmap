@@ -278,7 +278,7 @@ body {
 .tool-popup,
 .tool-popup-positioner {
   z-index: 999;
-  pointer-events: none;
+  /* pointer-events: none; */
   background: white;
   border-radius: 8px;
   min-height: fit-content !important;
@@ -302,6 +302,7 @@ body {
 .tool-popup-body a {
   margin-block-start: auto;
   display: inline-block;
+  pointer-events: all;
 }
 .step-tool.open {
   background: var(--data-contrast);

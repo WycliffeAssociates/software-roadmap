@@ -46,5 +46,5 @@ export function Section2Tools() {
         </div>
       </div>
     </div>
-  );
+  )
 }

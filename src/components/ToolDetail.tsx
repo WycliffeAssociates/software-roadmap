@@ -161,7 +161,6 @@ export function ToolDetail() {
         onKeydown={closeOnEscape}
         onScroll={closeOnDeltaScrollGreaterThan}
       />
-      ;
     </>
   );
 }
