@@ -48,7 +48,7 @@ const globalSvgViewBoxHeight = roadSvg.viewBox.baseVal.height;
 const globalFullVhUnitInSvgTerms = window.innerHeight / globalSvgViewBoxHeight;
 const globalInitialTail = globalFullVhUnitInSvgTerms * 5; //i.e. 3%
 const globalTranslateYMagicNumber = 0.3;
-const globalIsTouch = ScrollTrigger.isTouch === 1;
+const globalIsTouch = ScrollTrigger.isTouch;
 
 function initAllAnimations() {
   const {sectionStarts} = initialJsGsapSets();
@@ -416,11 +416,10 @@ function ScrollTriggerSections() {
     // Observer to handle touch devices cause the scrolling is not smooth on mobile and tablet and pinning is feeling weird there; And scrollbars don't always show
     ScrollTrigger.observe({
       target: section, // can be any element (selector text is fine)
-      type: import.meta.env.PROD ? "scroll" : "wheel,scroll", // comma-delimited list of what to listen for ("wheel,touch,scroll,pointer")
+      type: "", // comma-delimited list of what to listen for ("wheel,touch,scroll,pointer")
       tolerance: 16,
       onUp: () => {
-        if (!globalIsAnimating) {
-          if (import.meta.env.PROD && !ScrollTrigger.isTouch) return;
+        if (!globalIsAnimating && ScrollTrigger.isTouch) {
           console.log("fire handle touches UP");
           handleTouches({
             dir: "UP",
@@ -435,8 +434,7 @@ function ScrollTriggerSections() {
         }
       },
       onDown: (p) => {
-        if (import.meta.env.PROD && !ScrollTrigger.isTouch) return;
-        if (!globalIsAnimating) {
+        if (!globalIsAnimating && ScrollTrigger.isTouch) {
           console.log("fire handle touches DOWN");
           handleTouches({
             dir: "DOWN",
@@ -867,12 +865,6 @@ function handleTouches({
       nextSectIdx = globalStepTracker.sectionIdx + 1;
     }
   }
-  debugger;
-  // if (isBoundaryStep) {
-  // }
-  // isBoundaryStep
-  //   ? stInstance.enable(false, false)
-  //   : stInstance.disable(false, false);
 
   if (nextSectIdx > sections.length - 1 || nextSectIdx < 0) {
     return;
