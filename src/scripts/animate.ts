@@ -416,7 +416,7 @@ function ScrollTriggerSections() {
     // Observer to handle touch devices cause the scrolling is not smooth on mobile and tablet and pinning is feeling weird there; And scrollbars don't always show
     ScrollTrigger.observe({
       target: section, // can be any element (selector text is fine)
-      type: import.meta.env.PROD ? "touch" : "wheel,touch,scroll", // comma-delimited list of what to listen for ("wheel,touch,scroll,pointer")
+      type: import.meta.env.PROD ? "scroll" : "wheel,scroll", // comma-delimited list of what to listen for ("wheel,touch,scroll,pointer")
       tolerance: 16,
       onUp: () => {
         if (!globalIsAnimating) {
