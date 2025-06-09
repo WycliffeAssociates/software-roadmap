@@ -80,7 +80,7 @@ export function ToolDetail() {
     // just el y cause will use as pos fixed
 
     // set the x and y to the fat side of the window;
-    // debugger;
+    //
     const windowWidth = window.innerWidth;
 
     const edgeRightSpace = windowWidth - elRect.right;
@@ -102,7 +102,7 @@ export function ToolDetail() {
         elRect.y -
         toolDetailSize().height +
         0.5 * toolDetailSize().height; //the  .5 is cause there is a -50% transform on the panel for center
-      // debugger;
+      //
       let y = elRect.y;
       if (bottomOverflow < 0) {
         y = elRect.y + bottomOverflow - 32; //+ bottomOverflow cause it is negative

@@ -6,6 +6,7 @@ import MainRoad from "@components/MainRoad.astro";
 import SectionBgs from "@components/SectionBgs.astro";
 import Sections from "@components/Sections.astro";
 import {ToolDetail} from "@components/ToolDetail";
+import MobileMenu from "@components/MobileMenu.astro";
 ---
 
 <html lang="en">
@@ -24,6 +25,7 @@ import {ToolDetail} from "@components/ToolDetail";
       <SectionBgs />
       <Sections />
       <ToolDetail client:load />
+      <MobileMenu />
       <div class="lvhCheck"></div>
     </div>
   </body>
@@ -44,7 +46,5 @@ import {ToolDetail} from "@components/ToolDetail";
 
 <script>
   import {initAllAnimations} from "@scripts/animate";
-  import {initAllAnimations as animateO} from "@scripts/animate-o";
-  // initAllAnimations();
-  animateO();
+  initAllAnimations();
 </script>

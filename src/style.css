@@ -381,10 +381,8 @@ body {
   .step-header {
     grid-column: 2/9;
     grid-row: 2;
-    background-color: unset;
   }
   .step-description {
-    background-color: unset;
     grid-column: 2/8;
     grid-row: 3/14;
   }
