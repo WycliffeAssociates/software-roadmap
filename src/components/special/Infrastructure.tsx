@@ -3,11 +3,25 @@ import {InfraDecoSvg} from "@svgs/decorative/Infra";
 export function InfraSectionContent() {
   return (
     <div class="infra-container infraGrid" data-js="infraGrid">
-      <div class="infrGridCard">WACS</div>
-      <div class="infrGridCard">Audio Biel</div>
-      <div class="infrGridCard">Public Data API</div>
-      <div class="infrGridCard">Scripture Rendering Pipeline</div>
-      <div class="infrGridCard">Brightcove (3rd Party)</div>
+      <div data-tool-name="wacs" data-js="step-tool" class="infrGridCard">
+        WACS
+      </div>
+      <div data-tool-name="audioBiel" data-js="step-tool" class="infrGridCard">
+        Audio Biel
+      </div>
+      <div
+        data-js="step-tool"
+        data-tool-name="publicDataApi"
+        class="infrGridCard"
+      >
+        Public Data API
+      </div>
+      <div data-js="step-tool" data-tool-name="srp" class="infrGridCard">
+        Scripture Rendering Pipeline
+      </div>
+      <div data-js="step-tool" data-tool-name="brightcove" class="infrGridCard">
+        Brightcove (3rd Party)
+      </div>
       <div class="infraGridDeco">
         <InfraDecoSvg />
       </div>

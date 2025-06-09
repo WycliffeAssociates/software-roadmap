@@ -127,6 +127,18 @@ export const tools = {
     description:
       "During the translation process, it's sometimes helpful to be able to read the current work in progress as a whole, so this site provides a view of a translation project as it currently stands in a readable format.",
   },
+  srp: {
+    title: "Scripture Rendering Pipeline",
+    dataName: "srp",
+    description:
+      "As written projects are worked on, we need a way to render the text into various formats for publication. The Scripture Rendering Pipeline (SRP) is a tool that converts the USFM files into various formats for consumption.",
+  },
+  brightcove: {
+    title: "Brightcove",
+    dataName: "brightcove",
+    description:
+      "Brightcove is a third-party service we use to host our video content. It provides a way to stream our sign language videos and other video content.",
+  },
   port: {
     title: "PORT",
     dataName: "port",
@@ -197,6 +209,12 @@ export const tools = {
     icon: yieldIcon,
     description:
       "Translation work is sometimes still done via hand where technology is not available or conducive to use. We are experimenting with ways to digitize this handwritten text to speed up the production process as well as have the translation data available for safe keeping.",
+  },
+  publicDataApi: {
+    title: "Public Data API",
+    dataName: "publicDataApi",
+    description:
+      "We surface information concerning languages, translations, and resources through our Public Data API. This allows for easy access to our data for developers and other interested parties.",
   },
 };
 

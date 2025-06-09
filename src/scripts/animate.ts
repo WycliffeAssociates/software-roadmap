@@ -127,7 +127,6 @@ export function initToc(tween?: gsap.core.Tween) {
         if (!globalSectionStarts) return;
         const sectionParent = allRoadmapSections[topIdx] as HTMLElement;
         if (!sectionParent) return;
-        console.log(globalSectionStarts);
         const sectionY = globalSectionStarts[topIdx]; //a vh value:
         const mult = getSectionHeightMultiplier();
         const vhSection = mult * windowInnerHeight;
@@ -196,7 +195,6 @@ function initialJsGsapSets() {
     sectionStarts[idx] = totalTop + heroHeight + 1;
     totalTop += height;
   });
-  // console.log(sectionStarts);
   let heightTilLastSection = sectionStarts[sectionBgs.length - 1];
   gsap.set(".road-svg", {
     height: heightTilLastSection + "px",
@@ -224,7 +222,6 @@ function ScrollTriggerSections() {
     });
 
     const end = `${steps * getSectionHeightMultiplier() * 100}%`;
-    console.log(`section ${index} end: ${end}`);
     ScrollTrigger.create({
       trigger: section,
       start: "top top",
@@ -412,13 +409,7 @@ function ScrollTriggerSections() {
         trigger: section,
         start: "center+=10% center",
         end: `bottom top+=${10 + index * 1.8}%`,
-        // scrub: 0.1,
-        // markers: import.meta.env.DEV && {
-        //   endColor: getColor(index),
-        //   indent: 100,
-        //   startColor: "red",
-        //   fontSize: "26px",
-        // },
+
         onUpdate: (self) => {
           // the prev section end will be
           const start =
@@ -674,13 +665,15 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
     );
   }
 
-  const stepTools = sectionEl.querySelectorAll(".step-tool");
+  const stepTools = [...sectionEl.querySelectorAll(dataJs("step-tool"))];
+
   if (stepTools) {
     sectionEnterTimeline.to(
       stepTools,
       {
         autoAlpha: 1,
-        ...noTranslation,
+        noTranslation,
+        // ...noTranslation,
         duration: 0.3,
         stagger: 0.1,
       },
