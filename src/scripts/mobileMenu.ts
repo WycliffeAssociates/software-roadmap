@@ -34,6 +34,7 @@ export function initMobileMenu() {
         "click",
         () => {
           closeFxn.play();
+          closeFxn.seek(0);
         },
         {
           once: true,
