@@ -59,6 +59,14 @@ const windowInnerHeight = lvhHeight;
 let fullVhUnitInSvgTerms = windowInnerHeight / svgViewBoxHeight;
 const initialTail = fullVhUnitInSvgTerms * 5; //i.e. 3%
 const translateYMagicNumber = 0.3;
+let globalCurrentTocItemsHighlighted: {
+  sectionIdx: number;
+  stepIdx: number;
+  els: {
+    section: HTMLElement | null;
+    step: HTMLElement | null;
+  };
+} = {sectionIdx: -1, stepIdx: -1, els: {section: null, step: null}};
 
 const getSectionHeightMultiplier = () => {
   const hasMouseOrPointer = !ScrollTrigger.isTouch;
@@ -135,7 +143,7 @@ export function initToc(tween?: gsap.core.Tween) {
         const asPx = totalY;
 
         gsap.to(window, {
-          scrollTo: `${asPx + 5}`, //little bit of extra padding into step
+          scrollTo: `${asPx + 8}`, //little bit of extra padding into step
           duration: 0.2,
           onComplete: () => {
             // If tween is provided, play it
@@ -272,6 +280,8 @@ function ScrollTriggerSections() {
           steps,
           Math.floor(progress.progressInSection * steps) + 1
         );
+        console.log({index, currentStep});
+        updateCurrentTocHighlighted(index, currentStep);
         if (header && trackedStep !== currentStep) {
           const step = content[index]!.steps[currentStep];
           trackedStep = currentStep;
@@ -371,6 +381,7 @@ function ScrollTriggerSections() {
           }
         }
 
+        updateCurrentTocHighlighted(index, 0);
         sectionEntranceAnimations(section);
       },
       onEnterBack: () => {
@@ -672,8 +683,7 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
       stepTools,
       {
         autoAlpha: 1,
-        noTranslation,
-        // ...noTranslation,
+        ...noTranslation,
         duration: 0.3,
         stagger: 0.1,
       },
@@ -778,6 +788,51 @@ function dataJsQuerySelector(selector: string, all?: boolean) {
 }
 function dataJs(s: string) {
   return `[data-js="${s}"]`;
+}
+
+function updateCurrentTocHighlighted(sectionIdx: number, stepIdx: number) {
+  let tl = gsap.timeline({paused: true});
+  let tocLis = document.querySelectorAll(".toc li");
+  let section = tocLis[sectionIdx];
+  if (!section) return;
+  let sectionHeader = section.querySelector("a");
+  let tocSteps = section.querySelectorAll("ol button");
+  const tocStep = tocSteps[stepIdx - 1];
+  let rmStyle = {
+    color: "#656478",
+    duration: 0.2,
+    fontWeight: "400",
+  };
+
+  const isNewSection =
+    sectionIdx !== globalCurrentTocItemsHighlighted.sectionIdx;
+  const isNewStep =
+    stepIdx !== globalCurrentTocItemsHighlighted.stepIdx || isNewSection;
+  console.log({isNewSection, isNewStep, sectionIdx, stepIdx});
+  if (!isNewSection && !isNewStep) {
+    // nothing to do
+    return;
+  }
+
+  isNewSection &&
+    globalCurrentTocItemsHighlighted.els.section &&
+    globalCurrentTocItemsHighlighted.els.section.classList.remove("active");
+  isNewStep &&
+    globalCurrentTocItemsHighlighted.els.step &&
+    globalCurrentTocItemsHighlighted.els.step.classList.remove("active");
+
+  isNewSection && sectionHeader?.classList.add("active");
+  isNewStep && tocStep?.classList.add("active");
+
+  globalCurrentTocItemsHighlighted = {
+    sectionIdx,
+    stepIdx,
+    els: {
+      section: sectionHeader as HTMLElement,
+      step: tocStep as HTMLElement,
+    },
+  };
+  tl.play();
 }
 
 export {initAllAnimations};

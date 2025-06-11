@@ -78,4 +78,15 @@
   ol ol {
     margin-inline-start: 20px;
   }
+  .toc-section-header,
+  button {
+    transition: all 0.3s ease-in-out;
+  }
+  .toc-section-header.active,
+  button.active {
+    transition: all 0.3s ease-in-out;
+    color: var(--global-data-contrast, #3f3d56) !important;
+    font-weight: 700;
+    transform: scale(1.07);
+  }
 </style>
