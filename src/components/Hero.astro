@@ -4,63 +4,86 @@ import HeroRoad from "@svgs/HeroRoad.astro";
 ---
 
 <header class="hero" data-js="hero">
-  <WaLogo />
-  <h1>Software Roadmap</h1>
-  <p>
-    Follow the road to see the how Wycliffe Associate aids in Bible Translation
-  </p>
-  <a href="#section1" class="seeMore">
-    <svg
-      width="25"
-      height="24"
-      viewBox="0 0 25 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M11.4242 4.96262V15.7151L6.60032 11.0175C6.2148 10.6421 5.58216 10.6421 5.19664 11.0175C5.10501 11.1065 5.0323 11.2123 4.9827 11.3288C4.9331 11.4452 4.90756 11.5701 4.90756 11.6961C4.90756 11.8222 4.9331 11.947 4.9827 12.0635C5.0323 12.1799 5.10501 12.2857 5.19664 12.3748L11.7109 18.7184C12.0964 19.0939 12.7192 19.0939 13.1047 18.7184L19.6189 12.3748C19.7104 12.2857 19.783 12.1799 19.8325 12.0634C19.8821 11.947 19.9076 11.8222 19.9076 11.6961C19.9076 11.5701 19.8821 11.4453 19.8325 11.3289C19.783 11.2124 19.7104 11.1066 19.6189 11.0175C19.5274 10.9284 19.4187 10.8577 19.2992 10.8094C19.1796 10.7612 19.0514 10.7364 18.922 10.7364C18.7926 10.7364 18.6644 10.7612 18.5448 10.8094C18.4253 10.8577 18.3166 10.9284 18.2251 11.0175L13.4012 15.7151V4.96262C13.4012 4.43318 12.9564 4 12.4127 4C11.869 4 11.4242 4.43318 11.4242 4.96262Z"
-        fill="#3F3D56"></path>
-    </svg>
-    <span>Get started</span>
-  </a>
-  <HeroRoad />
+    <WaLogo />
+    <h1>Software Roadmap</h1>
+    <p>
+        Follow the road to see the how Wycliffe Associate aids in Bible
+        Translation
+    </p>
+    <div class="heroButtons">
+        <a href="#section1" class="seeMore" data-js="seeMore">
+            <svg
+                width="25"
+                height="24"
+                viewBox="0 0 25 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    d="M11.4242 4.96262V15.7151L6.60032 11.0175C6.2148 10.6421 5.58216 10.6421 5.19664 11.0175C5.10501 11.1065 5.0323 11.2123 4.9827 11.3288C4.9331 11.4452 4.90756 11.5701 4.90756 11.6961C4.90756 11.8222 4.9331 11.947 4.9827 12.0635C5.0323 12.1799 5.10501 12.2857 5.19664 12.3748L11.7109 18.7184C12.0964 19.0939 12.7192 19.0939 13.1047 18.7184L19.6189 12.3748C19.7104 12.2857 19.783 12.1799 19.8325 12.0634C19.8821 11.947 19.9076 11.8222 19.9076 11.6961C19.9076 11.5701 19.8821 11.4453 19.8325 11.3289C19.783 11.2124 19.7104 11.1066 19.6189 11.0175C19.5274 10.9284 19.4187 10.8577 19.2992 10.8094C19.1796 10.7612 19.0514 10.7364 18.922 10.7364C18.7926 10.7364 18.6644 10.7612 18.5448 10.8094C18.4253 10.8577 18.3166 10.9284 18.2251 11.0175L13.4012 15.7151V4.96262C13.4012 4.43318 12.9564 4 12.4127 4C11.869 4 11.4242 4.43318 11.4242 4.96262Z"
+                    fill="#3F3D56"></path>
+            </svg>
+            <span>Get started</span>
+        </a>
+        <button type="button" class="seeMore" data-js="audioStart">
+            Take the audio tour
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                ><g fill="currentColor"
+                    ><path
+                        d="M10 16v-5.401A2.999 2.999 0 0 0 10 5.4V0L4.667 4H0v8h4.667z"
+                    ></path><path
+                        d="m13.6 3.2l-.799-.6L11.6 4.199l.8.6a4 4 0 0 1 .8.802c.503.668.8 1.497.8 2.399s-.297 1.73-.8 2.4a4 4 0 0 1-.8.8l-.8.601l1.201 1.6l.8-.601a6 6 0 0 0 1.198-1.2A5.98 5.98 0 0 0 16 8c0-1.35-.447-2.598-1.2-3.6a6 6 0 0 0-1.2-1.2"
+                    ></path></g
+                ></svg
+            >
+        </button>
+    </div>
+    <HeroRoad />
 </header>
 
 <style>
-  .hero {
-    position: relative;
-    height: 90vh;
-    gap: 3rem;
-    align-items: center;
-    padding: 48px 16px;
-    color: #fff;
-    background: var(--hero-bg-color);
-    position: relative;
-    z-index: 100;
-    display: grid;
-    place-content: center;
-    justify-items: center;
-  }
-  h1 {
-    font-size: 3rem;
-    text-transform: uppercase;
-    font-weight: 700;
-  }
-  .seeMore {
-    display: flex;
-    gap: 16px;
-    padding: 0.625rem;
-    border: solid rgba(63, 61, 86, 1) 2px;
-    background: #fff;
-    align-items: center;
-    border-radius: 8px;
-    color: #3f3d56;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    box-shadow: 2px 2px 0 0 rgba(63, 61, 86, 1);
-  }
-  .seeMore:active {
-    transform: scale(0.98);
-  }
+    .hero {
+        position: relative;
+        height: 90vh;
+        gap: 3rem;
+        align-items: center;
+        padding: 48px 16px;
+        color: #fff;
+        background: var(--hero-bg-color);
+        position: relative;
+        z-index: 100;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+    }
+    h1 {
+        font-size: 3rem;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+    .heroButtons {
+        display: flex;
+        gap: 2rem;
+    }
+    .seeMore {
+        display: flex;
+        gap: 16px;
+        padding: 0.625rem;
+        border: solid rgba(63, 61, 86, 1) 2px;
+        background: #fff;
+        align-items: center;
+        border-radius: 8px;
+        color: #3f3d56;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 2px 2px 0 0 rgba(63, 61, 86, 1);
+    }
+    .seeMore:active {
+        transform: scale(0.98);
+    }
 </style>

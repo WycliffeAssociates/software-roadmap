@@ -30,8 +30,8 @@ function computeStepPercents(steps: number, start = 10, end = 90): number[] {
 
   const range = end - start;
   return Array.from(
-    {length: steps},
-    (_, i) => start + (i / (steps - 1)) * range
+    { length: steps },
+    (_, i) => start + (i / (steps - 1)) * range,
   );
 }
 
@@ -84,4 +84,33 @@ function computeStepProgresses({
   return computed;
 }
 
-export {trimCubicPathAtY, computeStepPercents, computeStepProgresses};
+function animateAudioAt30FPS(
+  audio: HTMLAudioElement,
+  onTick: (time: number) => void,
+) {
+  const fpsInterval = 1000 / 30; // ~33.33ms
+  let then = performance.now();
+
+  function tick(now: number) {
+    const elapsed = now - then;
+    if (elapsed >= fpsInterval) {
+      then = now - (elapsed % fpsInterval); // keep frame phase stable
+      const time = audio.currentTime;
+      // const progress = time / audio.duration;
+      onTick(time);
+    }
+
+    if (!audio.paused && !audio.ended) {
+      requestAnimationFrame(tick);
+    }
+  }
+
+  requestAnimationFrame(tick);
+}
+
+export {
+  trimCubicPathAtY,
+  computeStepPercents,
+  computeStepProgresses,
+  animateAudioAt30FPS,
+};

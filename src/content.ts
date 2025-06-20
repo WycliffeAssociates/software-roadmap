@@ -361,4 +361,76 @@ const content: ContentType = {
   },
 } as const;
 
-export {content};
+// 205 seconds of audio in this file
+export const audioFileToStepMap = {
+  3: {
+    section: 0,
+    step: 1,
+  },
+  10: {
+    section: 0,
+    step: 2,
+  },
+  19: {
+    section: 0,
+    step: 3,
+  },
+  32: {
+    section: 0,
+    step: 4,
+  },
+  35: {
+    section: 0,
+    step: 5,
+  },
+  43: {
+    section: 0,
+    step: 6,
+  },
+  50: {
+    section: 0,
+    step: 7,
+  },
+  58: {
+    section: 0,
+    step: 8,
+  },
+  64: {
+    section: 1,
+    step: 1,
+  },
+  75: {
+    section: 2,
+    step: 1,
+  },
+  82: {
+    section: 2,
+    step: 2,
+  },
+  91: {
+    section: 2,
+    step: 3,
+  },
+  100: {
+    section: 2,
+    step: 4,
+  },
+  109: {
+    section: 3,
+    step: 1,
+  },
+  122: {
+    section: 3,
+    step: 2,
+  },
+  149: {
+    section: 3,
+    step: 3,
+  },
+  159: {
+    section: 4,
+    step: 1,
+  },
+};
+
+export { content };

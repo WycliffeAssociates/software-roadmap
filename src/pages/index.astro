@@ -5,46 +5,78 @@ import RoadMapInfo from "@components/RoadMapInfo.astro";
 import MainRoad from "@components/MainRoad.astro";
 import SectionBgs from "@components/SectionBgs.astro";
 import Sections from "@components/Sections.astro";
-import {ToolDetail} from "@components/ToolDetail";
+import { ToolDetail } from "@components/ToolDetail";
 import MobileMenu from "@components/MobileMenu.astro";
 ---
 
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Software Roadmap - Bible in Every Language</title>
-  </head>
-  <body>
-    <Hero />
-    <div class="roadMap">
-      <RoadMapInfo />
-      <MainRoad />
-      <SectionBgs />
-      <Sections />
-      <ToolDetail client:load />
-      <MobileMenu />
-      <div class="lvhCheck"></div>
-    </div>
-  </body>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Software Roadmap - Bible in Every Language</title>
+    </head>
+    <body>
+        <audio src="/carnaval.mp3"></audio>
+        <button type="button" data-js="togglePauseAudio">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                ><path
+                    data-js="audioTogglePath"
+                    fill="currentColor"
+                    d="M14 19V5h4v14zm-8 0V5h4v14z"></path></svg
+            >
+        </button>
+        <Hero />
+        <div class="roadMap">
+            <RoadMapInfo />
+            <MainRoad />
+            <SectionBgs />
+            <Sections />
+            <ToolDetail client:load />
+            <MobileMenu />
+            <div class="lvhCheck"></div>
+        </div>
+    </body>
 </html>
 
 <style>
-  .roadMap {
-    position: relative;
-  }
-  .lvhCheck {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100lvh;
-  }
+    .roadMap {
+        position: relative;
+    }
+    .lvhCheck {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100lvh;
+    }
+    [data-js="togglePauseAudio"] {
+        position: fixed;
+        bottom: 1rem;
+        left: 1rem;
+        z-index: 50;
+        /* background: none; */
+        background: var(--global-data-contrast, #2d709d);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        height: 32px;
+        width: 32px;
+        cursor: pointer;
+        visibility: hidden;
+        opacity: 0;
+    }
+    /* audio {
+        display: none;
+    } */
 </style>
 
 <script>
-  import {initAllAnimations} from "@scripts/animate";
-  initAllAnimations();
+    import { initAllAnimations } from "@scripts/animate";
+    initAllAnimations();
 </script>

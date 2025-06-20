@@ -1,21 +1,24 @@
-import {gsap} from "gsap";
-import {ScrollTrigger} from "gsap/ScrollTrigger";
-import {DrawSVGPlugin} from "gsap/DrawSVGPlugin";
-import {CSSPlugin} from "gsap/CSSPlugin";
-import {Flip} from "gsap/Flip";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+import { CSSPlugin } from "gsap/CSSPlugin";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+import { Flip } from "gsap/Flip";
 // import {content, type ToolType} from "./content";
-import {GSDevTools} from "gsap/GSDevTools";
-import {ScrollToPlugin} from "gsap/ScrollToPlugin";
-import {content, type ToolType} from "@src/content";
-import {computeStepPercents, computeStepProgresses} from "./utils";
+import { GSDevTools } from "gsap/GSDevTools";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { content, type ToolType, audioFileToStepMap } from "@src/content";
+import { computeStepProgresses, animateAudioAt30FPS } from "./utils";
+import { pauseAudioPath, playAudioPath } from "../icons.ts";
 
 gsap.registerPlugin(
   ScrollTrigger,
   DrawSVGPlugin,
   CSSPlugin,
+  MorphSVGPlugin,
   Flip,
   GSDevTools,
-  ScrollToPlugin
+  ScrollToPlugin,
 );
 window.gsap = gsap; // for devtools
 // opt in to non intrusive js thread scroll jacking
@@ -25,7 +28,6 @@ window.gsap = gsap; // for devtools
 let globalSectionStarts: {
   [key: number]: number;
 } | null = null;
-let globalCalcSvgRoadHeight = 0;
 let globalInfraEllipse: SVGEllipseElement | null | undefined = null;
 const noTranslation = {
   translateX: 0,
@@ -33,7 +35,7 @@ const noTranslation = {
 } as const;
 const sections = dataJsQuerySelector(
   "section",
-  true
+  true,
 ) as NodeListOf<HTMLElement>;
 let globalLastUpdateTime = 0;
 const UPDATE_THROTTLE_MS = 33; // ~30fps
@@ -42,12 +44,12 @@ let globalRoadMaskPath = dataJsQuerySelector("maskPath") as SVGPathElement;
 const heroMaskPath = dataJsQuerySelector("heroMaskPath") as SVGSVGElement;
 const sectionBgs = dataJsQuerySelector(
   "section-bg",
-  true
+  true,
 ) as NodeListOf<HTMLElement>;
 const roadPath = dataJsQuerySelector("roadPath") as SVGSVGElement;
 const allRoadmapSections = dataJsQuerySelector(
   "section",
-  true
+  true,
 ) as NodeListOf<HTMLElement>;
 const stepDotEls: Array<SVGCircleElement> = [];
 let totalProgress = 0;
@@ -66,7 +68,7 @@ let globalCurrentTocItemsHighlighted: {
     section: HTMLElement | null;
     step: HTMLElement | null;
   };
-} = {sectionIdx: -1, stepIdx: -1, els: {section: null, step: null}};
+} = { sectionIdx: -1, stepIdx: -1, els: { section: null, step: null } };
 
 const getSectionHeightMultiplier = () => {
   const hasMouseOrPointer = !ScrollTrigger.isTouch;
@@ -85,11 +87,10 @@ const getSectionEndPx = (steps: number) => {
 };
 
 function initAllAnimations() {
-  const {sectionStarts, svgRoadHeight} = initialJsGsapSets();
+  const { sectionStarts, svgRoadHeight } = initialJsGsapSets();
   // Adjust some thing
   fullVhUnitInSvgTerms = windowInnerHeight / svgRoadHeight;
   globalSectionStarts = sectionStarts;
-  globalCalcSvgRoadHeight = svgRoadHeight;
   const infraEllipse = drawEllipseAroundInfra();
   globalInfraEllipse = infraEllipse;
   // reselect after editing viewbox;
@@ -99,6 +100,7 @@ function initAllAnimations() {
   //
   initToc();
   smoothScrollGetStarted();
+  wireUpAudioTour();
   initHeroRoad();
   ScrollTriggerSections();
 }
@@ -180,7 +182,15 @@ function initialJsGsapSets() {
   const hero = dataJsQuerySelector("hero") as HTMLElement;
   const heroHeight = hero.getBoundingClientRect().height;
 
-  gsap.set([globalRoadMaskPath], {drawSVG: `${initialTail}%`});
+  const specialCopy = dataJsQuerySelector("specialCopy", true);
+  if (specialCopy) {
+    gsap.set(specialCopy, {
+      autoAlpha: 0,
+      translateY: "-20px",
+    });
+  }
+
+  gsap.set([globalRoadMaskPath], { drawSVG: `${initialTail}%` });
 
   gsap.set(dataJs("step-header"), {
     autoAlpha: "0",
@@ -190,10 +200,10 @@ function initialJsGsapSets() {
     autoAlpha: "0",
     translateX: "-20px",
   });
-  gsap.set(dataJs("step-tool"), {autoAlpha: 0, translateX: "10px"});
+  gsap.set(dataJs("step-tool"), { autoAlpha: 0, translateX: "10px" });
 
   let totalTop = 0;
-  let sectionStarts: {[key: number]: number} = {};
+  let sectionStarts: { [key: number]: number } = {};
   sectionBgs.forEach((sectionBg, idx) => {
     sectionBg.style.top = `${totalTop}px`;
     const steps = sectionBg.dataset.steps;
@@ -209,7 +219,7 @@ function initialJsGsapSets() {
   });
   globalRoadSvgEl.setAttribute("viewBox", `0 0 89 ${heightTilLastSection}`);
 
-  return {sectionStarts, svgRoadHeight: heightTilLastSection};
+  return { sectionStarts, svgRoadHeight: heightTilLastSection };
 }
 
 function ScrollTriggerSections() {
@@ -268,7 +278,7 @@ function ScrollTriggerSections() {
 
         // Check if a step dot should be drawn at this progress point
         const step = stepDots.find(
-          (s) => Math.abs(s.percent - progress.floored) < 2
+          (s) => Math.abs(s.percent - progress.floored) < 2,
         );
         if (step && !step.drawn && doDrawRoad) {
           drawCircleOnRoad(step);
@@ -278,9 +288,9 @@ function ScrollTriggerSections() {
         // Update the section header text to show current step
         const currentStep = Math.min(
           steps,
-          Math.floor(progress.progressInSection * steps) + 1
+          Math.floor(progress.progressInSection * steps) + 1,
         );
-        console.log({index, currentStep});
+        console.log({ index, currentStep });
         updateCurrentTocHighlighted(index, currentStep);
         if (header && trackedStep !== currentStep) {
           const step = content[index]!.steps[currentStep];
@@ -356,7 +366,7 @@ function ScrollTriggerSections() {
           // set it as root variable
           document.documentElement.style.setProperty(
             "--global-data-contrast",
-            dataContrast
+            dataContrast,
           );
           let dTl = gsap.timeline();
           dTl.to(roadPath, {
@@ -372,11 +382,11 @@ function ScrollTriggerSections() {
                 onComplete: () => {
                   document.documentElement.style.setProperty(
                     "--circle-stroke",
-                    dataContrast
+                    dataContrast,
                   );
                 },
               },
-              "<"
+              "<",
             );
           }
         }
@@ -389,7 +399,7 @@ function ScrollTriggerSections() {
         if (dataContrast) {
           document.documentElement.style.setProperty(
             "--global-data-contrast",
-            dataContrast
+            dataContrast,
           );
           gsap
             .timeline()
@@ -405,11 +415,11 @@ function ScrollTriggerSections() {
                 onComplete: () => {
                   document.documentElement.style.setProperty(
                     "--circle-stroke",
-                    dataContrast
+                    dataContrast,
                   );
                 },
               },
-              "<"
+              "<",
             );
         }
       },
@@ -434,7 +444,7 @@ function ScrollTriggerSections() {
           const interpolatedYPct = gsap.utils.interpolate(
             Number(start),
             endYWithTailShowing,
-            self.progress
+            self.progress,
           );
           gsap.to(globalRoadSvgEl, {
             y: `${interpolatedYPct}%`,
@@ -449,7 +459,7 @@ function ScrollTriggerSections() {
 function getSectionProgress(
   self: globalThis.ScrollTrigger,
   index: number,
-  sectionLength: number
+  sectionLength: number,
 ) {
   const progressInSection = self.progress;
   const outOf100 = progressInSection * 100;
@@ -467,8 +477,8 @@ function getSectionProgress(
   };
 }
 
-function drawCircleOnRoad(step: {point: DOMPoint; drawn: boolean}) {
-  const {dot} = getSvgCircle({
+function drawCircleOnRoad(step: { point: DOMPoint; drawn: boolean }) {
+  const { dot } = getSvgCircle({
     cx: step.point.x.toString(),
     cy: step.point.y.toString(),
   });
@@ -488,25 +498,25 @@ type SvgCircArgs = {
   cx: string;
   cy: string;
 };
-function getSvgCircle({cx, cy}: SvgCircArgs) {
+function getSvgCircle({ cx, cy }: SvgCircArgs) {
   const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
   dot.setAttribute("cy", cy);
   dot.setAttribute("cx", cx);
   dot.setAttribute("r", "10");
-  return {dot};
+  return { dot };
 }
 
 export function updateTitle(
   sectionEl: HTMLElement,
   newText: string,
-  newDesc: string
+  newDesc: string,
 ) {
   const textNode = sectionEl.querySelector(
-    ".section-step-text-node"
+    ".section-step-text-node",
   ) as HTMLElement;
   const descNode = sectionEl.querySelector(
-    ".section-step-desc-node"
+    ".section-step-desc-node",
   ) as HTMLElement;
 
   if (!textNode || !descNode) return;
@@ -541,8 +551,8 @@ export function updateTools(sectionEl: HTMLElement, newTools: Array<ToolType>) {
   const currentTools = [
     ...sectionEl.querySelectorAll(".step-tool"),
   ] as Array<HTMLElement>;
-  const {keep, remove} = currentTools.reduce(
-    (acc: {keep: Array<HTMLElement>; remove: Array<HTMLElement>}, tool) => {
+  const { keep, remove } = currentTools.reduce(
+    (acc: { keep: Array<HTMLElement>; remove: Array<HTMLElement> }, tool) => {
       const toolName = tool.getAttribute("data-tool-name");
       if (newTools.find((tool) => tool.dataName === toolName)) {
         acc.keep.push(tool);
@@ -551,7 +561,7 @@ export function updateTools(sectionEl: HTMLElement, newTools: Array<ToolType>) {
       }
       return acc;
     },
-    {keep: [], remove: []}
+    { keep: [], remove: [] },
   );
   const initial = Flip.getState(stepToolsContainer);
 
@@ -575,7 +585,7 @@ export function updateTools(sectionEl: HTMLElement, newTools: Array<ToolType>) {
         });
       },
     },
-    ".2"
+    ".2",
   );
 
   let newToolGroup: Array<HTMLElement> = [];
@@ -585,9 +595,9 @@ export function updateTools(sectionEl: HTMLElement, newTools: Array<ToolType>) {
         tool.icon,
         tool.title,
         tool.dataName,
-        tool.inProgress
+        tool.inProgress,
       );
-      tl.set(newTool, {x: "20px", opacity: "0"}, "0");
+      tl.set(newTool, { x: "20px", opacity: "0" }, "0");
 
       stepToolsContainer.appendChild(newTool);
       newToolGroup.push(newTool);
@@ -607,7 +617,7 @@ function getNewStepTool(
   icon: string | null | undefined,
   toolName: string,
   toolDataName: string,
-  inProgress: boolean = false
+  inProgress: boolean = false,
 ) {
   const newLiTool = document.createElement("li");
   newLiTool.setAttribute("class", "step-tool");
@@ -646,7 +656,7 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
         ...noTranslation,
         duration: 0.3,
       },
-      "<"
+      "<",
     );
   }
 
@@ -659,7 +669,7 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
         ...noTranslation,
         duration: 0.3,
       },
-      "<"
+      "<",
     );
   }
 
@@ -672,7 +682,7 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
         ...noTranslation,
         duration: 0.3,
       },
-      "<"
+      "<",
     );
   }
 
@@ -687,9 +697,23 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
         duration: 0.3,
         stagger: 0.1,
       },
-      "<"
+      "<",
     );
   }
+
+  const specialCopy = sectionEl.querySelector(dataJs("specialCopy"));
+  if (specialCopy) {
+    sectionEnterTimeline.to(
+      specialCopy,
+      {
+        autoAlpha: 1,
+        ...noTranslation,
+        duration: 0.3,
+      },
+      "<",
+    );
+  }
+
   sectionEnterTimeline.play();
 }
 
@@ -715,7 +739,7 @@ function drawEllipseAroundInfra() {
     stroke-dasharray: 1 15;
     z-index: -1;
     stroke-linecap: round;
-  `
+  `,
   );
 
   // Create Ellipse
@@ -738,7 +762,7 @@ function drawEllipseAroundInfra() {
     "style",
     `
     transform: translateX(50%) translateY(50%);
-  `
+  `,
   );
   clone.setAttribute("stroke", "white");
   mask.appendChild(clone);
@@ -754,9 +778,46 @@ function drawEllipseAroundInfra() {
   return ellipse;
 }
 
+function wireUpAudioTour() {
+  const audioBtn = document.querySelector(
+    ".hero [data-js='audioStart']",
+  ) as HTMLAnchorElement;
+  const audioToggleBtn = document.querySelector(
+    "[data-js='togglePauseAudio']",
+  ) as HTMLButtonElement;
+  const audio = document.querySelector("audio");
+  if (!audioBtn || !audio || !audioToggleBtn) return;
+  audioBtn?.addEventListener("click", (e) => {
+    gsap
+      .timeline({
+        onComplete: () => {
+          gsap.to(audioToggleBtn, {
+            duration: 0.3,
+            autoAlpha: 1,
+          });
+          audioTour(audioToggleBtn);
+        },
+      })
+      .to(window, {
+        scrollTo: "#section1",
+        duration: 0.3,
+      })
+      .to(
+        window,
+        {
+          scrollTo: () => {
+            return {
+              y: `${window.scrollY + 1}`,
+            };
+          },
+        },
+        ">",
+      );
+  });
+}
 function smoothScrollGetStarted() {
   const getStartedBtn = document.querySelector(
-    ".hero .seeMore"
+    ".hero [data-js='seeMore']",
   ) as HTMLAnchorElement;
   if (!getStartedBtn) return;
   getStartedBtn?.addEventListener("click", (e) => {
@@ -776,10 +837,116 @@ function smoothScrollGetStarted() {
             };
           },
         },
-        ">"
+        ">",
       );
   });
 }
+
+function audioTour(audioToggleBtn: HTMLButtonElement) {
+  const audio = document.querySelector("audio");
+  const toggleSvg = audioToggleBtn?.querySelector(
+    "[data-js='audioTogglePath']",
+  );
+  if (!audio) return;
+  audioToggleBtn.addEventListener("click", () => {
+    if (audio.paused) {
+      gsap.to(toggleSvg, {
+        duration: 0.3,
+        morphSVG: pauseAudioPath,
+      });
+      audio.play();
+      animateAudioAt30FPS(audio, tickAudio);
+    } else {
+      gsap.to(toggleSvg, {
+        duration: 0.3,
+        morphSVG: playAudioPath,
+      });
+      audio.pause();
+    }
+  });
+  const audioProgressToScroll = getAudioToScrollMap();
+  audio.play();
+  // setTimeout(() => {
+  //   gsap.to(window, {
+  //     scrollTo: audioProgressToScroll![10],
+  //     duration: 1,
+  //   });
+  // }, 1000);
+  function findStepBounds(currentTime: number) {
+    const keys = Object.keys(audioProgressToScroll!);
+    const nextLargest = keys.findIndex((k) => Number(k) >= currentTime);
+    if (nextLargest === 0) {
+      return {}; //noop
+      // const progressVal = getLinearProgress(currentTime, 0, firstStep);
+
+      // return [0, firstStep];
+    }
+    const prevStep = nextLargest - 1;
+    if (!keys[prevStep]) {
+      return {}; //noop
+    }
+    const cur = audioProgressToScroll![keys[prevStep]];
+    const next = audioProgressToScroll![keys[nextLargest]];
+    const progressVal = getLinearProgress(
+      currentTime,
+      Number(keys[prevStep]),
+      Number(keys[nextLargest]),
+    );
+    const scroll1Val = cur;
+    const scroll2Val = next;
+
+    return {
+      progressVal,
+      scroll1Val,
+      scroll2Val,
+    };
+  }
+  function tickAudio(time: number) {
+    // const floored = Math.floor(time);
+    // const nextStep = audioProgressToScroll?.[floored];
+    // if (!nextStep) {
+    const { progressVal, scroll1Val, scroll2Val } = findStepBounds(time);
+    console.log({ progressVal, scroll1Val, scroll2Val });
+    if (!progressVal || !scroll1Val || !scroll2Val) return;
+    const interpolated = gsap.utils.interpolate(
+      scroll1Val,
+      scroll2Val,
+      progressVal,
+    );
+    gsap.to(window, {
+      scrollTo: interpolated,
+      // duration: 0.01,
+    });
+    // } else {
+    //   gsap.to(window, {
+    //     scrollTo: nextStep,
+    //     duration: 0.2,
+    //   });
+    // }
+  }
+  animateAudioAt30FPS(audio, tickAudio);
+  // audio.addEventListener("timeupdate", () => {
+  // });
+}
+function getAudioToScrollMap() {
+  if (!globalSectionStarts) return;
+  const audioProgressToScroll = Object.entries(audioFileToStepMap).reduce(
+    (acc: Record<string, string>, [time, { section, step }]) => {
+      const sectY = globalSectionStarts![section];
+      const mult = getSectionHeightMultiplier();
+      const vhSection = mult * windowInnerHeight;
+      const stepYPx = vhSection * step;
+      const totalY = sectY + stepYPx - 8;
+      acc[time] = String(totalY);
+      // acc[time] = { section, step };
+      return acc;
+    },
+    {},
+  );
+  console.log({ audioProgressToScroll });
+  return audioProgressToScroll;
+}
+
 function dataJsQuerySelector(selector: string, all?: boolean) {
   if (all) {
     return document.querySelectorAll(`[data-js="${selector}"]`);
@@ -791,7 +958,7 @@ function dataJs(s: string) {
 }
 
 function updateCurrentTocHighlighted(sectionIdx: number, stepIdx: number) {
-  let tl = gsap.timeline({paused: true});
+  let tl = gsap.timeline({ paused: true });
   let tocLis = document.querySelectorAll(".toc li");
   let section = tocLis[sectionIdx];
   if (!section) return;
@@ -808,7 +975,7 @@ function updateCurrentTocHighlighted(sectionIdx: number, stepIdx: number) {
     sectionIdx !== globalCurrentTocItemsHighlighted.sectionIdx;
   const isNewStep =
     stepIdx !== globalCurrentTocItemsHighlighted.stepIdx || isNewSection;
-  console.log({isNewSection, isNewStep, sectionIdx, stepIdx});
+  console.log({ isNewSection, isNewStep, sectionIdx, stepIdx });
   if (!isNewSection && !isNewStep) {
     // nothing to do
     return;
@@ -834,5 +1001,8 @@ function updateCurrentTocHighlighted(sectionIdx: number, stepIdx: number) {
   };
   tl.play();
 }
+function getLinearProgress(x: number, start: number, end: number): number {
+  return (x - start) / (end - start);
+}
 
-export {initAllAnimations};
+export { initAllAnimations };

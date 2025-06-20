@@ -1,8 +1,8 @@
-import {FloatingPanel} from "@ark-ui/solid/floating-panel";
-import {createSignal, Show} from "solid-js";
-import {DocumentEventListener} from "@solid-primitives/event-listener";
-import {Portal} from "solid-js/web";
-import {tools} from "@src/content";
+import { FloatingPanel } from "@ark-ui/solid/floating-panel";
+import { createSignal, Show } from "solid-js";
+import { DocumentEventListener } from "@solid-primitives/event-listener";
+import { Portal } from "solid-js/web";
+import { tools } from "@src/content";
 
 export function ToolDetail() {
   const [scrollToolXY, setToolXY] = createSignal({
@@ -47,13 +47,17 @@ export function ToolDetail() {
       }
       return;
     }
+    if (openTool() && openTool() === target) {
+      closeTool();
+      return;
+    }
 
     let currentToolOpen = openTool();
     currentToolOpen && currentToolOpen.classList.remove("open");
     const nearestSection = tgt.closest('[data-js="section"]');
     const toolName = target.getAttribute("data-tool-name");
     const matchingTool = Object.values(tools).find(
-      (tool) => tool.dataName === toolName
+      (tool) => tool.dataName === toolName,
     );
     if (!matchingTool) {
       return;
@@ -67,12 +71,12 @@ export function ToolDetail() {
       link: matchingTool.linkOut || "",
     });
     const dataContrast = nearestSection?.getAttribute("data-contrast");
-    console.log({dataContrast});
+    console.log({ dataContrast });
 
     target.classList.add("open");
     document.documentElement.style.setProperty(
       "--tool-detail-contrast",
-      dataContrast || ""
+      dataContrast || "",
     );
     // set the --data-contrast  on root:
     setOpenTool(target as HTMLElement);
