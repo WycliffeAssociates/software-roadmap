@@ -14,7 +14,7 @@
 body {
   font-family: sans-serif;
   overflow-x: hidden;
-  overscroll-behavior-block: none;
+  /* overscroll-behavior-block: none; */
 }
 
 .road-svg,
