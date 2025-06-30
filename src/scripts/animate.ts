@@ -191,6 +191,10 @@ function initialJsGsapSets() {
     translateX: "-20px",
   });
   gsap.set(dataJs("step-tool"), {autoAlpha: 0, translateX: "10px"});
+  gsap.set(dataJs("specialCopy"), {
+    autoAlpha: "0",
+    translateY: "-20px",
+  });
 
   let totalTop = 0;
   let sectionStarts: {[key: number]: number} = {};
@@ -280,7 +284,6 @@ function ScrollTriggerSections() {
           steps,
           Math.floor(progress.progressInSection * steps) + 1
         );
-        console.log({index, currentStep});
         updateCurrentTocHighlighted(index, currentStep);
         if (header && trackedStep !== currentStep) {
           const step = content[index]!.steps[currentStep];
@@ -678,6 +681,20 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
 
   const stepTools = [...sectionEl.querySelectorAll(dataJs("step-tool"))];
 
+  const specialCopy = sectionEl.querySelector(dataJs("specialCopy"));
+  console.log({specialCopy});
+  if (specialCopy) {
+    sectionEnterTimeline.to(
+      specialCopy,
+      {
+        autoAlpha: 1,
+        ...noTranslation,
+        duration: 0.3,
+      },
+      "<"
+    );
+  }
+
   if (stepTools) {
     sectionEnterTimeline.to(
       stepTools,
@@ -808,7 +825,6 @@ function updateCurrentTocHighlighted(sectionIdx: number, stepIdx: number) {
     sectionIdx !== globalCurrentTocItemsHighlighted.sectionIdx;
   const isNewStep =
     stepIdx !== globalCurrentTocItemsHighlighted.stepIdx || isNewSection;
-  console.log({isNewSection, isNewStep, sectionIdx, stepIdx});
   if (!isNewSection && !isNewStep) {
     // nothing to do
     return;
