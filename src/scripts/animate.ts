@@ -89,6 +89,7 @@ function initAllAnimations() {
   // Adjust some thing
   fullVhUnitInSvgTerms = windowInnerHeight / svgRoadHeight;
   globalSectionStarts = sectionStarts;
+  console.log(globalSectionStarts);
   globalCalcSvgRoadHeight = svgRoadHeight;
   const infraEllipse = drawEllipseAroundInfra();
   globalInfraEllipse = infraEllipse;
@@ -141,9 +142,10 @@ export function initToc(tween?: gsap.core.Tween) {
         const stepYPx = vhSection * subIdx;
         const totalY = sectionY + stepYPx;
         const asPx = totalY;
-
+        const hero = dataJsQuerySelector("hero") as HTMLElement;
+        // todo: debug
         gsap.to(window, {
-          scrollTo: `${asPx + 8}`, //little bit of extra padding into step
+          scrollTo: `${asPx + 20}`, //little bit of extra padding into step. I don't know why this is the amoutn needed though
           duration: 0.2,
           onComplete: () => {
             // If tween is provided, play it
@@ -179,7 +181,6 @@ function initHeroRoad() {
 function initialJsGsapSets() {
   const hero = dataJsQuerySelector("hero") as HTMLElement;
   const heroHeight = hero.getBoundingClientRect().height;
-
   gsap.set([globalRoadMaskPath], {drawSVG: `${initialTail}%`});
 
   gsap.set(dataJs("step-header"), {
@@ -682,7 +683,6 @@ function sectionEntranceAnimations(sectionEl: HTMLElement) {
   const stepTools = [...sectionEl.querySelectorAll(dataJs("step-tool"))];
 
   const specialCopy = sectionEl.querySelector(dataJs("specialCopy"));
-  console.log({specialCopy});
   if (specialCopy) {
     sectionEnterTimeline.to(
       specialCopy,
