@@ -223,28 +223,34 @@ body {
 
 .infrGridCard:first-child {
   grid-row: 1;
-  grid-column: 4/8;
+  grid-column: 1/-1;
   align-self: start;
   transform: translateY(-50%) !important;
 }
 .infrGridCard:nth-child(2) {
   grid-row: 2;
-  grid-column: 1/4;
+  grid-column: 2/8;
   transform: translateX(-50%) !important;
 }
 .infrGridCard:nth-child(3) {
-  grid-column: 14/-1;
   grid-row: 2;
+  grid-column: 10/16;
   transform: translateX(50%) !important;
 }
 .infrGridCard:nth-child(4) {
-  grid-column: 3/7;
+  grid-column: 2/8;
   grid-row: 3;
   align-self: end;
+  transform: translateX(-50%) !important;
 }
 .infrGridCard:nth-child(5) {
-  grid-column: 11/17;
   grid-row: 3;
+  grid-column: 10/16;
+  transform: translateX(50%) !important;
+}
+.infrGridCard:nth-child(6) {
+  grid-column: 1/-1;
+  grid-row: 4;
   align-self: end;
 }
 .boxBorder {
@@ -257,7 +263,7 @@ body {
   border-radius: 9999px;
   /* box-shadow: 4px 4px 0 0 #38383e; */
 }
-.infrGridCard:first-child {
+/* .infrGridCard:first-child {
   grid-row: 1;
   grid-column: 6/13;
   align-self: start;
@@ -282,7 +288,7 @@ body {
   grid-column: 10/17;
   grid-row: 3;
   align-self: end;
-}
+} */
 .infraGridDeco {
   grid-row: 2;
   grid-column: 7/12;
@@ -430,29 +436,40 @@ body {
   }
   .infrGridCard:first-child {
     grid-row: 1;
-    grid-column: 7/12;
+    grid-column: 2/7;
     align-self: start;
-    transform: translateY(-50%);
+    transform: none !important;
   }
   .infrGridCard:nth-child(2) {
-    grid-row: 2;
-    grid-column: 1/4;
-    transform: translateX(-50%);
+    grid-row: 1;
+    grid-column: 12/15;
+    align-self: start;
+    transform: none !important;
   }
   .infrGridCard:nth-child(3) {
-    grid-column: 14/-1;
+    grid-column: 1/4;
     grid-row: 2;
-    transform: translateX(50%);
+    align-self: center;
+    transform: translateX(-50%) !important;
   }
   .infrGridCard:nth-child(4) {
-    grid-column: 1/8;
-    grid-row: 3;
-    align-self: end;
+    grid-column: 12/16;
+    grid-row: 2;
+    /* align-self: end; */
+    align-self: center;
+    transform: translateX(50%) !important;
   }
   .infrGridCard:nth-child(5) {
-    grid-column: 11/17;
     grid-row: 3;
+    grid-column: 2/7;
     align-self: end;
+    transform: none !important;
+  }
+  .infrGridCard:nth-child(6) {
+    grid-row: 3;
+    grid-column: 12/16;
+    align-self: end;
+    transform: none !important;
   }
   .infraGridDeco {
     grid-row: 2;

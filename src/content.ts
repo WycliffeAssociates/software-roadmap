@@ -1,13 +1,13 @@
 import {
-  oratureIcon,
-  recorderIcon,
-  writerIcon,
-  vmastIcon,
-  yieldIcon,
   docIcon,
   greekWordsIcon,
+  oratureIcon,
+  recorderIcon,
   stetIcon,
   usfmConverterIcon,
+  vmastIcon,
+  writerIcon,
+  yieldIcon,
 } from "./icons";
 
 const defaultLorem =
@@ -67,8 +67,16 @@ export const tools = {
       "This tool allows you to download Scripture in one or two languages, optionally combined with resources such as Translation Notes used in the translation checking process (described on Resources page).",
     linkOut: "https://doc.bibleineverylanguage.org/languages",
   },
+  spotlight: {
+    title: "Spotlight (Glossary)",
+    icon: yieldIcon,
+    dataName: "spotlight",
+    inProgress: true,
+    description: "",
+    linkOut: "",
+  },
   nllb: {
-    title: "No Language Left Behind",
+    title: "Scripture Forge/NLLB",
     icon: yieldIcon,
     dataName: "nllb",
     inProgress: true,
@@ -90,12 +98,6 @@ export const tools = {
     inProgress: true,
     description:
       "We are exploring how RAG (Retrieval-Augmented Generation) can be used to augment the resources available to translators during the translation process.",
-  },
-  collab: {
-    title: "Collaborative Refinement Tool",
-    icon: yieldIcon,
-    dataName: "collab",
-    inProgress: true,
   },
   passages: {
     title: "Passages",
@@ -202,9 +204,13 @@ export const tools = {
   textToSpeechGen: {
     title: "Text-to-Speech Generator",
     dataName: "ttsGen",
+    icon: yieldIcon,
+    description:
+      "Text-to-Speech Generator is a tool that allows us to generate audio from text.",
+    inProgress: true,
   },
   handwritingRecognition: {
-    title: "Handwriting Text Recognition",
+    title: "Transcriber (HTR)",
     dataName: "handwritingRecognition",
     icon: yieldIcon,
     description:
@@ -215,6 +221,45 @@ export const tools = {
     dataName: "publicDataApi",
     description:
       "We surface information concerning languages, translations, and resources through our Public Data API. This allows for easy access to our data for developers and other interested parties.",
+  },
+  aqua: {
+    title: "AQuA",
+    dataName: "aqua",
+    description: "",
+    icon: yieldIcon,
+    inProgress: true,
+  },
+  greekRoom: {
+    title: "Greek Room",
+    dataName: "greekRoom",
+    description:
+      "greekroom is a suite of tools to support Biblical natural language processing",
+    icon: yieldIcon,
+    inProgress: true,
+  },
+  interpresure: {
+    title: "Interpresure",
+    dataName: "interpresure",
+    description:
+      "Interpresure is a relational database that will contain structured annotation of every sentence in the Greek New Testament, showing what implicit meanings are present, and how, and their theological implications in order to give maximal transparency to translators so they can make informed decisions when needed.",
+    icon: yieldIcon,
+    inProgress: true,
+  },
+  audioMasking: {
+    title: "Audio Masking",
+    dataName: "audioMasking",
+    description:
+      "Audio masking is exploring how to manipulate audio voices for the safety of translators.",
+    icon: yieldIcon,
+    inProgress: true,
+  },
+  scriptureEditor: {
+    title: "Scripture Editor for Refinement",
+    dataName: "scriptureEditor",
+    description:
+      "An in progress lightweight editor for collaborative refinement of translations.",
+    inProgress: true,
+    icon: yieldIcon,
   },
 };
 
@@ -266,19 +311,37 @@ const content: ContentType = {
         title: "Step 6:<br /> Peer Edit",
         description:
           "A team member will carefully review the blind draft translation. This person will compare it to the source material, asking questions and suggesting edits to ensure the intended meaning of the biblical author is effectively communicated.",
-        tools: [tools.writer, tools.nllb, tools.orature, tools.vmast],
+        tools: [
+          tools.writer,
+          tools.orature,
+          tools.nllb,
+          tools.spotlight,
+          tools.vmast,
+        ],
       },
       7: {
         title: "Step 7:<br /> Keyword Check",
         description:
           "A translator and a partner must identify key words* and important concepts in each verse of the source text.",
-        tools: [tools.recorder, tools.writer, tools.orature, tools.vmast],
+        tools: [
+          tools.recorder,
+          tools.writer,
+          tools.orature,
+          tools.spotlight,
+          tools.vmast,
+        ],
       },
       8: {
         title: "Step 8:<br /> Verse-by-Verse Check",
         description:
           "Two additional individuals, apart from the translator, are involved. The translator reads their translation chunk by chunk in the mother tongue. One partner verbally translates each chunk into the source language while the other compares it to the source text, suggesting edits as needed.",
-        tools: [tools.writer, tools.doc, tools.orature, tools.vmast],
+        tools: [
+          tools.writer,
+          tools.doc,
+          tools.orature,
+          tools.spotlight,
+          tools.vmast,
+        ],
       },
     },
   },
@@ -298,25 +361,32 @@ const content: ContentType = {
         title: "Step 1: <br /> Quality Assessment Guide",
         description:
           "The QAG serves as a rubric by which the translation team evaluates each chapter for specific qualities, such as accuracy, faithfulness, historical appropriateness, clarity, naturalness, correct style, grammar, and spelling. ",
-        tools: [tools.greekWords, tools.rag, tools.collab],
+        tools: [
+          tools.aqua,
+          tools.greekRoom,
+          tools.greekWords,
+          tools.interpresure,
+          tools.rag,
+          tools.scriptureEditor,
+        ],
       },
       2: {
         title: "Step 2: <br /> Reviewer's Guide",
         description:
           "The Reviewers’ Guide introduces community checking. Each passage is accompanied by background information and a set of comprehension questions.  Participants’ answers guide further revision.",
-        tools: [tools.doc, tools.passages],
+        tools: [tools.doc, tools.passages, tools.scriptureEditor],
       },
       3: {
         title: "Step 3: <br /> Spiritual Terms Evaluation Tools",
         description:
           "The STET focuses on theological consistency. It includes approximately 100 core spiritual terms drawn from our open-source Greek lexicon, with examples of their usage across the New Testament. The goal is to maintain doctrinal integrity and semantic precision throughout the translation with these terms.",
-        tools: [tools.stet, tools.doc],
+        tools: [tools.stet, tools.doc, tools.scriptureEditor],
       },
       4: {
         title: "Step 4: <br /> Proofreading",
         description:
           "The final step in the refinement process is a detailed checklist featuring a chapter-by-chapter review of capitalization, punctuation, formatting, grammar, and layout, especially useful when typing has been done later in the process.",
-        tools: [tools.wordAnalysis],
+        tools: [tools.wordAnalysis, tools.scriptureEditor],
       },
     },
   },
@@ -340,9 +410,11 @@ const content: ContentType = {
           "We run an automated process to identify possible versification, punctuation, and other editorial issues. The publication team collaborates with the field teams to resolve as many issues as possible.",
         tools: [
           tools.ptxPrint,
+          tools.audioMasking,
           tools.sab,
           tools.usfmConverter,
           tools.usfmLinter,
+          tools.textToSpeechGen,
         ],
       },
       3: {
