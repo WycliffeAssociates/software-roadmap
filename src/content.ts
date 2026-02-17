@@ -72,7 +72,7 @@ export const tools = {
     icon: yieldIcon,
     dataName: "spotlight",
     inProgress: true,
-    description: "",
+    description: "Spotlight is an app to collect translators decisions about how to translate tricky theological terms, so help teams be consistent in their translations.",
     linkOut: "",
   },
   nllb: {
@@ -80,7 +80,7 @@ export const tools = {
     icon: yieldIcon,
     dataName: "nllb",
     inProgress: true,
-    description: "",
+    description: "An online app for team-based translation, featuring AI help and tools for community review.",
     linkOut: "",
   },
   greekWords: {
@@ -238,10 +238,10 @@ export const tools = {
     inProgress: true,
   },
   interpresure: {
-    title: "Interpresure",
+    title: "InterpreSure",
     dataName: "interpresure",
     description:
-      "Interpresure is a relational database that will contain structured annotation of every sentence in the Greek New Testament, showing what implicit meanings are present, and how, and their theological implications in order to give maximal transparency to translators so they can make informed decisions when needed.",
+      "Interpresure is a relational database of contain structured annotation of every sentence in the Greek New Testament, showing what implicit meanings are present along with their theological implications, to give maximal transparency to translators so they can make informed decisions when needed.",
     icon: yieldIcon,
     inProgress: true,
   },
@@ -257,7 +257,7 @@ export const tools = {
     title: "Scripture Editor for Refinement",
     dataName: "scriptureEditor",
     description:
-      "An in progress lightweight editor for collaborative refinement of translations.",
+      "A lightweight editor for collaborative refinement of translations.",
     inProgress: true,
     icon: yieldIcon,
   },
