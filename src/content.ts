@@ -109,12 +109,16 @@ export const tools = {
     title: "Spiritual Terms Evaluation Tool",
     icon: stetIcon,
     dataName: "stet",
+    description:
+      "STET focuses on theological consistency. It includes approximately 100 core spiritual terms drawn from our open-source Greek lexicon, with examples of their usage across the New Testament. The goal is to maintain doctrinal integrity and semantic precision throughout the translation with these terms",
   },
   wordAnalysis: {
     title: "Word Analysis Tool",
     icon: yieldIcon,
     dataName: "wat",
     inProgress: true,
+    description:
+      "An AI-assisted linguistic QA tool designed to analyze draft Scripture translations at the word level, primarily to detect misspellings, orthographic inconsistencies, and word classifications.",
   },
   biel: {
     title: "Bible In Every Language",
@@ -144,7 +148,7 @@ export const tools = {
   port: {
     title: "PORT",
     dataName: "port",
-    description: "PORT is a tool we use to manage our translation projects.",
+    description: "PORT is the tool we use to manage and report on our translation work.",
   },
   sab: {
     title: "Scripture App Builder",
