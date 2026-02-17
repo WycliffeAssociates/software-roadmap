@@ -104,6 +104,9 @@ export const tools = {
     icon: yieldIcon,
     dataName: "passages",
     inProgress: true,
+    description:
+      "Passages is a web application developed as part of the DOC tool ecosystem that allows users to request arbitrary Scripture passages (verse references) and automatically generate a DOCX document formatted for review, checking, and note‑taking.",
+    linkOut: "https://doc.bibleineverylanguage.org/passages",
   },
   stet: {
     title: "Spiritual Terms Evaluation Tool",
@@ -111,6 +114,7 @@ export const tools = {
     dataName: "stet",
     description:
       "STET focuses on theological consistency. It includes approximately 100 core spiritual terms drawn from our open-source Greek lexicon, with examples of their usage across the New Testament. The goal is to maintain doctrinal integrity and semantic precision throughout the translation with these terms",
+    linkOut: "https://doc.bibleineverylanguage.org/stet",
   },
   wordAnalysis: {
     title: "Word Analysis Tool",
@@ -232,6 +236,8 @@ export const tools = {
     description: "",
     icon: yieldIcon,
     inProgress: true,
+    description:
+      "AQuA is an AI‑based quality‑assurance system developed by SIL, which Wycliffe Associates has evaluated and experimented with as a potential external tool for assessing Scripture translation quality, especially in the context of AI drafting and checking.",
   },
   greekRoom: {
     title: "Greek Room",
