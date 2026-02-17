@@ -72,7 +72,7 @@ export const tools = {
     icon: yieldIcon,
     dataName: "spotlight",
     inProgress: true,
-    description: "Spotlight is an app to collect translators decisions about how to translate tricky theological terms, so help teams be consistent in their translations.",
+    description: "Spotlight is an app to collect translators decisions about how to handle tricky theological terms, to help teams be consistent in their translations.",
     linkOut: "",
   },
   nllb: {
