@@ -267,7 +267,7 @@ export const tools = {
     title: "Scripture Editor for Refinement",
     dataName: "scriptureEditor",
     description:
-      "A lightweight editor for collaborative refinement of translations.",
+      "The Scripture Editor for Refinement is a web‑based collaborative editor designed to support teams in refining completed Bible translations, enabling project‑wide editing, USFM cleanup, and alignment with established refinement and quality‑assurance processes prior to publication.",
     inProgress: true,
     icon: yieldIcon,
   },
