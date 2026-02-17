@@ -243,7 +243,7 @@ export const tools = {
     title: "Greek Room",
     dataName: "greekRoom",
     description:
-      "greekroom is a suite of tools to support Biblical natural language processing",
+      "Greek Room is an external, open‑source translation analysis tool used by WA to evaluate Scripture translations through spell checking, phonetic similarity, and word alignment against reference texts, particularly for low‑resource languages.",
     icon: yieldIcon,
     inProgress: true,
   },
