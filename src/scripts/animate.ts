@@ -7,7 +7,7 @@ import {Flip} from "gsap/Flip";
 import {GSDevTools} from "gsap/GSDevTools";
 import {ScrollToPlugin} from "gsap/ScrollToPlugin";
 import {content, type ToolType} from "@src/content";
-import {computeStepPercents, computeStepProgresses} from "./utils";
+import {initProceduralRoad} from "./road";
 
 gsap.registerPlugin(
   ScrollTrigger,
@@ -20,6 +20,9 @@ gsap.registerPlugin(
 window.gsap = gsap; // for devtools
 // opt in to non intrusive js thread scroll jacking
 // ScrollTrigger.normalizeScroll(true);
+// We handle resize ourselves (see handleResize below) so our own pixel-based
+// layout stays in sync with the pin-spacer sizes GSAP recalculates on refresh.
+ScrollTrigger.config({autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"});
 
 // global state:
 let globalSectionStarts: {
@@ -38,27 +41,25 @@ const sections = dataJsQuerySelector(
 let globalLastUpdateTime = 0;
 const UPDATE_THROTTLE_MS = 33; // ~30fps
 let globalRoadSvgEl = dataJsQuerySelector("road-svg") as SVGSVGElement;
-let globalRoadMaskPath = dataJsQuerySelector("maskPath") as SVGPathElement;
 const heroMaskPath = dataJsQuerySelector("heroMaskPath") as SVGSVGElement;
 const sectionBgs = dataJsQuerySelector(
   "section-bg",
   true
 ) as NodeListOf<HTMLElement>;
-const roadPath = dataJsQuerySelector("roadPath") as SVGSVGElement;
+const roadPath = dataJsQuerySelector("roadPath") as SVGPathElement;
 const allRoadmapSections = dataJsQuerySelector(
   "section",
   true
 ) as NodeListOf<HTMLElement>;
-const stepDotEls: Array<SVGCircleElement> = [];
-let totalProgress = 0;
-const totalLength = globalRoadMaskPath.getTotalLength();
-const svgViewBoxHeight = globalRoadSvgEl.viewBox.baseVal.height;
 const lvhCheckEl = document.querySelector(".lvhCheck") as HTMLElement;
 const lvhHeight = lvhCheckEl.getBoundingClientRect().height;
-const windowInnerHeight = lvhHeight;
-let fullVhUnitInSvgTerms = windowInnerHeight / svgViewBoxHeight;
-const initialTail = fullVhUnitInSvgTerms * 5; //i.e. 3%
-const translateYMagicNumber = 0.3;
+let windowInnerHeight = lvhHeight;
+const roadController = initProceduralRoad({
+  window: document.querySelector(".road-svg-window") as HTMLElement,
+  svg: globalRoadSvgEl,
+  maskRect: dataJsQuerySelector("maskRect") as SVGRectElement,
+  roadPath,
+});
 let globalCurrentTocItemsHighlighted: {
   sectionIdx: number;
   stepIdx: number;
@@ -84,24 +85,74 @@ const getSectionEndPx = (steps: number) => {
   return pxVal;
 };
 
+// Describes, in page pixels, where each section pins and releases. road.ts
+// turns this into one viewport of road per section — see the comment there for
+// why the road's clock is not the page's clock.
+function computeRoadLayout(sectionStarts: {[key: number]: number}) {
+  const roadSections = [];
+  // The last section is Infrastructure, which has no steps and no road.
+  for (let index = 0; index < sections.length - 1; index++) {
+    const steps = parseInt(sections[index].dataset.steps || "1", 10);
+    const pinStart = sectionStarts[index];
+    roadSections.push({
+      pinStart,
+      // Matches the ScrollTrigger `end` for this section's pin.
+      pinEnd: pinStart + getSectionEndPx(steps),
+      gapEnd: sectionStarts[index + 1],
+      steps,
+    });
+  }
+  return {
+    roadStartY: sectionStarts[0],
+    viewportPx: windowInnerHeight,
+    sections: roadSections,
+  };
+}
+
 function initAllAnimations() {
   const {sectionStarts, svgRoadHeight} = initialJsGsapSets();
-  // Adjust some thing
-  fullVhUnitInSvgTerms = windowInnerHeight / svgRoadHeight;
   globalSectionStarts = sectionStarts;
-  console.log(globalSectionStarts);
   globalCalcSvgRoadHeight = svgRoadHeight;
+  roadController.setLayout(computeRoadLayout(sectionStarts));
   const infraEllipse = drawEllipseAroundInfra();
   globalInfraEllipse = infraEllipse;
-  // reselect after editing viewbox;
-  globalRoadSvgEl = dataJsQuerySelector("road-svg") as SVGSVGElement;
-  globalRoadMaskPath = dataJsQuerySelector("maskPath") as SVGPathElement;
 
   //
   initToc();
   smoothScrollGetStarted();
   initHeroRoad();
   ScrollTriggerSections();
+  window.addEventListener("resize", handleResize);
+}
+
+// Moving the window between screens of different sizes (e.g. unplugging an
+// external monitor) fires a resize mid-scroll. Our section backgrounds and
+// road-svg height/viewBox are plain inline pixel styles computed from the old
+// viewport size, so without this they go stale: the pin-spacers GSAP resizes
+// on refresh no longer line up with the scroll position the page is sitting
+// at, and the pinned section (and the road's draw progress) appears to go
+// blank. Recompute the layout for the new size, restore scroll to the
+// equivalent step, then refresh.
+let resizeTimeout: ReturnType<typeof setTimeout>;
+function handleResize() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    const {sectionIdx, stepIdx} = globalCurrentTocItemsHighlighted;
+
+    windowInnerHeight = lvhCheckEl.getBoundingClientRect().height;
+    const {sectionStarts, svgRoadHeight} = recalcSectionLayout();
+    globalSectionStarts = sectionStarts;
+    globalCalcSvgRoadHeight = svgRoadHeight;
+    roadController.setLayout(computeRoadLayout(sectionStarts));
+
+    if (sectionIdx >= 0 && globalSectionStarts) {
+      const sectionY = globalSectionStarts[sectionIdx];
+      const stepYPx = getSectionHeightMultiplier() * windowInnerHeight * Math.max(stepIdx - 1, 0);
+      window.scrollTo(0, sectionY + stepYPx);
+    }
+
+    ScrollTrigger.refresh();
+  }, 200);
 }
 
 export function initToc(tween?: gsap.core.Tween) {
@@ -179,10 +230,6 @@ function initHeroRoad() {
 }
 
 function initialJsGsapSets() {
-  const hero = dataJsQuerySelector("hero") as HTMLElement;
-  const heroHeight = hero.getBoundingClientRect().height;
-  gsap.set([globalRoadMaskPath], {drawSVG: `${initialTail}%`});
-
   gsap.set(dataJs("step-header"), {
     autoAlpha: "0",
     translateY: "-20px",
@@ -197,6 +244,16 @@ function initialJsGsapSets() {
     translateY: "-20px",
   });
 
+  return recalcSectionLayout();
+}
+
+// Pixel-based layout (section backgrounds + road svg height/viewBox) baked
+// from the current viewport size. Re-run on resize, since these are plain
+// inline styles that don't update on their own the way CSS vh units would.
+function recalcSectionLayout() {
+  const hero = dataJsQuerySelector("hero") as HTMLElement;
+  const heroHeight = hero.getBoundingClientRect().height;
+
   let totalTop = 0;
   let sectionStarts: {[key: number]: number} = {};
   sectionBgs.forEach((sectionBg, idx) => {
@@ -208,11 +265,9 @@ function initialJsGsapSets() {
     sectionStarts[idx] = totalTop + heroHeight + 1;
     totalTop += height;
   });
+  // road-svg's own height/viewBox is owned by road.ts (see computeRoadLayout /
+  // roadController.setLayout), not set here.
   let heightTilLastSection = sectionStarts[sectionBgs.length - 1];
-  gsap.set(".road-svg", {
-    height: heightTilLastSection + "px",
-  });
-  globalRoadSvgEl.setAttribute("viewBox", `0 0 89 ${heightTilLastSection}`);
 
   return {sectionStarts, svgRoadHeight: heightTilLastSection};
 }
@@ -224,23 +279,12 @@ function ScrollTriggerSections() {
     const header = section.querySelector(".step-header") as HTMLElement;
     let trackedStep = 1;
 
-    const stepDots = computeStepProgresses({
-      pathLength: totalLength,
-      steps,
-      path: globalRoadMaskPath,
-      sectionIdx: index,
-      sectionsLengths: sections.length,
-      svgViewBoxHeight,
-      windowInnerHeight,
-    });
-
     const end = `${steps * getSectionHeightMultiplier() * 100}%`;
     ScrollTrigger.create({
       trigger: section,
       start: "top top",
       end, // Each step adds 100vh to the scroll length for this section
       pin: true,
-      // scrub: 1,
       fastScrollEnd: true,
       invalidateOnRefresh: true,
       preventOverlaps: true,
@@ -253,37 +297,17 @@ function ScrollTriggerSections() {
         }
         globalLastUpdateTime = now;
 
-        // noop the last section
+        // noop the last section — no steps/road here (see computeRoadLayout)
         if (index == sections.length - 1) {
           return;
         }
-        const progress = getSectionProgress(self, index, sections.length);
-        const doDrawRoad = progress.asPercentOfTotalRoad > totalProgress;
-        // Only draw forwards
-        if (progress.asPercentOfTotalRoad > totalProgress) {
-          totalProgress = progress.asPercentOfTotalRoad;
-        }
-        // Draw the road as needed:
-        // This logic determines how much of the main path is visible within the mask
-        const currentTotalProgress = (self.progress + index) / sections.length;
-        const currentDrawnLength = currentTotalProgress * totalLength;
-        const drawPercent = (currentDrawnLength / totalLength) * 100;
-        const ratio = (windowInnerHeight * sections.length) / svgViewBoxHeight;
-        const asRatioOfWindowHeight = drawPercent * ratio;
 
-        // Check if a step dot should be drawn at this progress point
-        const step = stepDots.find(
-          (s) => Math.abs(s.percent - progress.floored) < 2
-        );
-        if (step && !step.drawn && doDrawRoad) {
-          drawCircleOnRoad(step);
-        }
-
-        // Update ui:
-        // Update the section header text to show current step
+        // Update the section header text to show current step. The road
+        // itself (reveal + dots + camera) is driven independently off real
+        // scroll position — see road.ts.
         const currentStep = Math.min(
           steps,
-          Math.floor(progress.progressInSection * steps) + 1
+          Math.floor(self.progress * steps) + 1
         );
         updateCurrentTocHighlighted(index, currentStep);
         if (header && trackedStep !== currentStep) {
@@ -293,32 +317,11 @@ function ScrollTriggerSections() {
           updateTitle(section, step.title, step.description);
           updateTools(section, step.tools);
         }
-
-        if (doDrawRoad) {
-          gsap.to(globalRoadMaskPath, {
-            drawSVG: `0 ${Math.max(asRatioOfWindowHeight, initialTail)}%`,
-            overwrite: true, // Prevent conflicts if multiple tweens try to control drawSVG
-          });
-        }
-
-        // Animate the vertical position of the entire `roadSvg`
-        if (progress.outOf100 > 70 && index < sections.length - 1) {
-          const indexAdjustSvgToVhPct = fullVhUnitInSvgTerms * 100 * index;
-          const sectionProgressContribution =
-            progress.progressInSection * translateYMagicNumber; //.3 is arbitrary / magic number to make it look good
-          const targetRoadYPct =
-            indexAdjustSvgToVhPct + sectionProgressContribution;
-          gsap.to(globalRoadSvgEl, {
-            y: `-${targetRoadYPct}%`, // Apply negative Y to move the SVG upwards
-            overwrite: true,
-          });
-        }
       },
       onLeaveBack: () => {
         if (index == 0) {
-          gsap.set(".road-svg", {
-            position: "static",
-          });
+          // The road is not pinned or repositioned here — it's a static
+          // document element that scrolls with the page (see road.ts).
           gsap.set(".roadMap-info", {
             position: "absolute",
             top: "16px",
@@ -332,9 +335,6 @@ function ScrollTriggerSections() {
       },
       onEnter: () => {
         if (index == 0) {
-          gsap.set(".road-svg", {
-            position: "fixed",
-          });
           gsap.set(".roadMap-info", {
             top: "16px",
             position: "fixed",
@@ -367,9 +367,10 @@ function ScrollTriggerSections() {
             stroke: dataContrast,
             duration: 0.5,
           });
-          if (stepDotEls.length) {
+          const drawnDots = roadController.getDots();
+          if (drawnDots.length) {
             dTl.to(
-              stepDotEls,
+              drawnDots,
               {
                 stroke: dataContrast,
                 duration: 0.5,
@@ -402,7 +403,7 @@ function ScrollTriggerSections() {
               duration: 0.5,
             })
             .to(
-              stepDotEls,
+              roadController.getDots(),
               {
                 stroke: dataContrast,
                 duration: 0.5,
@@ -418,87 +419,7 @@ function ScrollTriggerSections() {
         }
       },
     });
-
-    if (index < sections.length - 1) {
-      ScrollTrigger.create({
-        trigger: section,
-        start: "center+=10% center",
-        end: `bottom top+=${10 + index * 1.8}%`,
-
-        onUpdate: (self) => {
-          // the prev section end will be
-          const start =
-            fullVhUnitInSvgTerms * 100 * index * -1 - translateYMagicNumber; //.3 is magic number
-          // const start = gsap.getProperty(roadSvg, "y");
-          //  the question is, I know where I'm starting, and how much more do I need to shift up so the svg is only about current section + initial showing?
-          // i.e. slide up about 100vh totally with respect to svgViewBoxHeight
-          const indexAdjustVh = fullVhUnitInSvgTerms * 100 * (index + 1); //+1 cause this is still in index of prev section but we are really between sections
-          const endYWithTailShowing = indexAdjustVh * -1 + initialTail;
-
-          const interpolatedYPct = gsap.utils.interpolate(
-            Number(start),
-            endYWithTailShowing,
-            self.progress
-          );
-          gsap.to(globalRoadSvgEl, {
-            y: `${interpolatedYPct}%`,
-            ease: "steps(40)",
-          });
-        },
-      });
-    }
   });
-}
-
-function getSectionProgress(
-  self: globalThis.ScrollTrigger,
-  index: number,
-  sectionLength: number
-) {
-  const progressInSection = self.progress;
-  const outOf100 = progressInSection * 100;
-  const floored = Math.floor(outOf100);
-  const minForThisSectionIndex = index * (100 / sectionLength);
-  const asPercentOfTotalRoad =
-    minForThisSectionIndex + outOf100 / sections.length;
-
-  return {
-    progressInSection,
-    outOf100,
-    floored,
-    minForThisSectionIndex,
-    asPercentOfTotalRoad,
-  };
-}
-
-function drawCircleOnRoad(step: {point: DOMPoint; drawn: boolean}) {
-  const {dot} = getSvgCircle({
-    cx: step.point.x.toString(),
-    cy: step.point.y.toString(),
-  });
-  globalRoadSvgEl.appendChild(dot);
-  stepDotEls.push(dot);
-  step.drawn = true;
-  gsap.to([dot], {
-    duration: 0.5,
-    scale: 1.5,
-    opacity: "1",
-    ease: "bounce.out",
-    translateX: "-=25%",
-  });
-}
-
-type SvgCircArgs = {
-  cx: string;
-  cy: string;
-};
-function getSvgCircle({cx, cy}: SvgCircArgs) {
-  const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-
-  dot.setAttribute("cy", cy);
-  dot.setAttribute("cx", cx);
-  dot.setAttribute("r", "10");
-  return {dot};
 }
 
 export function updateTitle(

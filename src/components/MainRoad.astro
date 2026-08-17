@@ -8,6 +8,9 @@ import RoadSvg from "@svgs/RoadSvg.astro";
 
 <style>
   .road-svg-window {
+    /* road.ts switches this to fixed once it knows the layout: the road is
+       moved by its own camera transform, and has to hold still on screen while
+       a pinned section scrolls underneath it. */
     position: absolute;
     top: 0;
     left: 35%;

@@ -12,10 +12,29 @@ const path =
   xmlns="http://www.w3.org/2000/svg"
 >
   <defs>
-    <mask id="theMask">
-      <g id="maskGroup" class="maskGroup">
-        <path id="maskPath" d={path} stroke="#fff" data-js="maskPath"></path>
-      </g>
+    <!-- maskUnits/x/y/width/height are driven from road.ts so the mask region
+         is only ever the visible window. Left at the default
+         (objectBoundingBox) it covers the whole road's bounding box, which is a
+         very tall, very narrow surface for the browser to rasterise — WebKit
+         truncates it, drawing the road partway and then stopping. -->
+    <mask
+      id="theMask"
+      data-js="theMask"
+      maskUnits="userSpaceOnUse"
+      x="-8"
+      y="0"
+      width="105"
+      height="1000"
+    >
+      <!-- The reveal is a plain rectangle that grows downward, not a stroked
+           copy of the road. The road only ever travels downward, so uncovering
+           everything above a Y is identical to drawing along the path — but it
+           needs no stroke-dasharray, and dasharray lengths are exactly what
+           WebKit miscomputes on a retina display when combined with
+           vector-effect: non-scaling-stroke (the road stopped at ~half its
+           proper length there, while rendering correctly at 1x). -->
+      <rect id="maskRect" data-js="maskRect" fill="#fff" x="-40" y="0"
+        width="170" height="0"></rect>
     </mask>
   </defs>
   <g id="maskReveal" mask="url(#theMask)">
@@ -32,15 +51,12 @@ const path =
     stroke-linecap: round;
     stroke-dasharray: 7 15;
   }
-  path:not([data-js="maskPath"]) {
+  path {
     stroke: #2d709d;
   }
   .road-svg {
     width: 127px;
     top: 0;
     pointer-events: none;
-  }
-  #maskPath {
-    stroke-width: 20;
   }
 </style>

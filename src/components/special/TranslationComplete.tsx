@@ -9,23 +9,47 @@ export function Section2Tools() {
         the final product ending up in these respective places.
       </p>
       <div class="sect2ToolsSpecial">
-        <div
-          class="step-tool"
-          data-js="step-tool"
-          data-tool-name={tools.handwritingRecognition.dataName}
-        >
-          <div class="step-tool-inner inProgress">
-            <span innerHTML={yieldIcon} class="step-tool-icon" />
-            {tools.handwritingRecognition.title}
+        <div class="step-tool-stack">
+          <div
+            class="step-tool"
+            data-js="step-tool"
+            data-tool-name={tools.mobileScanner.dataName}
+          >
+            <div class="step-tool-inner inProgress">
+              <span innerHTML={yieldIcon} class="step-tool-icon" />
+              {tools.mobileScanner.title}
+            </div>
+          </div>
+          <div
+            class="step-tool"
+            data-js="step-tool"
+            data-tool-name={tools.handwritingRecognition.dataName}
+          >
+            <div class="step-tool-inner inProgress">
+              <span innerHTML={yieldIcon} class="step-tool-icon" />
+              {tools.handwritingRecognition.title}
+            </div>
           </div>
         </div>
-        <div
-          class="step-tool"
-          data-js="step-tool"
-          data-tool-name={tools.wacs.dataName}
-        >
-          <div class="step-tool-inner">
-            <span class="step-tool-text"> {tools.wacs.title} </span>
+        <div class="step-tool-stack">
+          <div
+            class="step-tool"
+            data-js="step-tool"
+            data-tool-name={tools.aiMasking.dataName}
+          >
+            <div class="step-tool-inner inProgress">
+              <span innerHTML={yieldIcon} class="step-tool-icon" />
+              {tools.aiMasking.title}
+            </div>
+          </div>
+          <div
+            class="step-tool"
+            data-js="step-tool"
+            data-tool-name={tools.wacs.dataName}
+          >
+            <div class="step-tool-inner">
+              <span class="step-tool-text"> {tools.wacs.title} </span>
+            </div>
           </div>
         </div>
         <div class="sect2ToolsStaggered">

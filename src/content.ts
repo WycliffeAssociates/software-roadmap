@@ -76,7 +76,7 @@ export const tools = {
     linkOut: "",
   },
   nllb: {
-    title: "Scripture Forge/NLLB",
+    title: "AI Draft Zero Review",
     icon: yieldIcon,
     dataName: "nllb",
     inProgress: true,
@@ -90,14 +90,6 @@ export const tools = {
     description:
       "This is a simple English/Greek lexicon. It gives translators information about the meaning of words in the original language of the New Testament.",
     linkOut: "https://gwt.bibleineverylanguage.org/",
-  },
-  rag: {
-    title: "Retrieval-Augmented Generation",
-    icon: yieldIcon,
-    dataName: "rag",
-    inProgress: true,
-    description:
-      "We are exploring how RAG (Retrieval-Augmented Generation) can be used to augment the resources available to translators during the translation process.",
   },
   passages: {
     title: "Passages",
@@ -188,8 +180,10 @@ export const tools = {
       "USFM Linter is a tool that allows us to check USFM for common errors, such as missing or incorrect markup, or for missing or incorrect text.",
   },
   audioBiel: {
-    title: "Audio BIEL",
+    title: "BIEL Mobile App",
     dataName: "audioBiel",
+    icon: yieldIcon,
+    inProgress: true,
     description:
       "Audio BIEL (Bible In Every Language) houses our audio used as source material in oral translation projects as well as some finished translations.",
     linkOut: "https://audio.bibleineverylanguage.org/",
@@ -223,6 +217,20 @@ export const tools = {
     icon: yieldIcon,
     description:
       "Translation work is sometimes still done via hand where technology is not available or conducive to use. We are experimenting with ways to digitize this handwritten text to speed up the production process as well as have the translation data available for safe keeping.",
+  },
+  mobileScanner: {
+    title: "Mobile Scanner App",
+    dataName: "mobileScanner",
+    icon: yieldIcon,
+    inProgress: true,
+    description: "",
+  },
+  aiMasking: {
+    title: "AI Masking Tool",
+    dataName: "aiMasking",
+    icon: yieldIcon,
+    inProgress: true,
+    description: "",
   },
   publicDataApi: {
     title: "Public Data API",
@@ -264,7 +272,7 @@ export const tools = {
     inProgress: true,
   },
   scriptureEditor: {
-    title: "Scripture Editor for Refinement",
+    title: "SEFER",
     dataName: "scriptureEditor",
     description:
       "The Scripture Editor for Refinement is a web‑based collaborative editor designed to support teams in refining completed Bible translations, enabling project‑wide editing, USFM cleanup, and alignment with established refinement and quality‑assurance processes prior to publication.",
@@ -315,7 +323,7 @@ const content: ContentType = {
         title: "Step 5:<br /> Self Edit",
         description:
           "The translator will look at (or listen to) the source text again and compare it to what was written (or recorded).",
-        tools: [tools.writer, tools.orature, tools.vmast],
+        tools: [tools.recorder, tools.writer, tools.orature, tools.vmast],
       },
       6: {
         title: "Step 6:<br /> Peer Edit",
@@ -327,6 +335,7 @@ const content: ContentType = {
           tools.nllb,
           tools.spotlight,
           tools.vmast,
+          tools.doc,
         ],
       },
       7: {
@@ -339,6 +348,7 @@ const content: ContentType = {
           tools.orature,
           tools.spotlight,
           tools.vmast,
+          tools.doc,
         ],
       },
       8: {
@@ -376,7 +386,6 @@ const content: ContentType = {
           tools.greekRoom,
           tools.greekWords,
           tools.interpresure,
-          tools.rag,
           tools.scriptureEditor,
         ],
       },
@@ -396,7 +405,7 @@ const content: ContentType = {
         title: "Step 4: <br /> Proofreading",
         description:
           "The final step in the refinement process is a detailed checklist featuring a chapter-by-chapter review of capitalization, punctuation, formatting, grammar, and layout, especially useful when typing has been done later in the process.",
-        tools: [tools.wordAnalysis, tools.scriptureEditor],
+        tools: [tools.wordAnalysis, tools.usfmLinter, tools.scriptureEditor],
       },
     },
   },
@@ -433,6 +442,8 @@ const content: ContentType = {
           "Most completed translations are available on Bible in Every Language and DOC. Once refined, Scripture products can be published in the format(s) desired by the language community. Formats include printed copies, text and/or audio apps, and sign language videos.",
         tools: [
           tools.audioBiel,
+          tools.biel,
+          tools.doc,
           tools.dotApp,
           tools.dotWeb,
           tools.ptxPrint,

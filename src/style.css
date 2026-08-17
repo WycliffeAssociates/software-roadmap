@@ -17,7 +17,11 @@ body {
   /* overscroll-behavior-block: none; */
 }
 
-.road-svg,
+/* .road-svg is deliberately excluded: it's as tall as the whole roadmap, and
+   promoting it to its own compositor layer would ask for a texture past the
+   ~16384px GPU limit (doubled again on a retina display), which renders
+   incorrectly on some machines and not others. It doesn't animate its
+   transform anyway — only its stroke dash. */
 .step-tool,
 .section-decorative {
   will-change: transform;
@@ -174,6 +178,12 @@ body {
 .sect2ToolsSpecial .step-tool {
   display: inline-grid;
   place-content: center;
+}
+.step-tool-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .sect2ToolsSpecial > div:first-child {
