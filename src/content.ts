@@ -241,7 +241,6 @@ export const tools = {
   aqua: {
     title: "AQuA",
     dataName: "aqua",
-    description: "",
     icon: yieldIcon,
     inProgress: true,
     description:
