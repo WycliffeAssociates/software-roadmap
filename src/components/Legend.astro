@@ -1,4 +1,5 @@
 ---
+import ExternalSign from "@svgs/External.svg";
 import YieldSign from "@svgs/Yield.svg";
 ---
 
@@ -8,6 +9,10 @@ import YieldSign from "@svgs/Yield.svg";
     <YieldSign />
     <span>Prototype</span>
   </span>
+  <span class="external">
+    <ExternalSign />
+    <span>External tool</span>
+  </span>
 </div>
 
 <style>
@@ -16,14 +21,21 @@ import YieldSign from "@svgs/Yield.svg";
     padding-block-end: 0.5rem;
     margin-block-end: 0.5rem;
   }
-  .inDev {
+  .inDev,
+  .external {
     margin-block-start: 0.5rem;
     display: flex;
     gap: 1rem;
     padding: 0.25rem 1rem;
-    background: #feeed8;
     border-radius: 8px;
+  }
+  .inDev {
+    background: #feeed8;
     color: #944300;
+  }
+  .external {
+    background: #ece4fb;
+    color: #5b2d9a;
   }
   .legend {
     color: #40404b;

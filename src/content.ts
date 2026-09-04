@@ -1,5 +1,6 @@
 import {
   docIcon,
+  externalIcon,
   greekWordsIcon,
   oratureIcon,
   recorderIcon,
@@ -22,13 +23,14 @@ export type ToolType = {
   icon?: string | null;
   dataName: string;
   inProgress?: boolean | undefined;
+  external?: boolean | undefined;
   description?: string;
   linkOut?: string;
 };
 
 export const tools = {
   writer: {
-    title: "BTT Writer",
+    title: "BTT-Writer",
     icon: writerIcon,
     dataName: "writer",
     description:
@@ -36,7 +38,7 @@ export const tools = {
     linkOut: "https://bibleineverylanguage.org/software/writer/",
   },
   recorder: {
-    title: "BTT Recorder",
+    title: "BTT-Recorder",
     icon: recorderIcon,
     dataName: "recorder",
     description:
@@ -75,13 +77,13 @@ export const tools = {
     description: "Spotlight is an app to collect translators decisions about how to handle tricky theological terms, to help teams be consistent in their translations.",
     linkOut: "",
   },
-  nllb: {
-    title: "AI Draft Zero Review",
+  wade: {
+    title: "WADE",
     icon: yieldIcon,
-    dataName: "nllb",
+    dataName: "wade",
     inProgress: true,
-    description: "An online app for team-based translation, featuring AI help and tools for community review.",
-    linkOut: "",
+    description:
+      "WADE is an early exploration of whether AI-assisted machine translation can produce a first-draft Old Testament that a translation team then reviews, edits, and approves.",
   },
   greekWords: {
     title: "Greek Words for Translators",
@@ -138,6 +140,8 @@ export const tools = {
   brightcove: {
     title: "Brightcove",
     dataName: "brightcove",
+    icon: externalIcon,
+    external: true,
     description:
       "Brightcove is a third-party service we use to host our video content. It provides a way to stream our sign language videos and other video content.",
   },
@@ -149,6 +153,8 @@ export const tools = {
   sab: {
     title: "Scripture App Builder",
     dataName: "sab",
+    icon: externalIcon,
+    external: true,
     description:
       "Scripture App Builder is a tool that allows us to create Android applications for offline reading of finished translations.",
   },
@@ -162,6 +168,8 @@ export const tools = {
   ptxPrint: {
     title: "PTXprint",
     dataName: "ptxPrint",
+    icon: externalIcon,
+    external: true,
     description:
       "PTXprint is a tool that facilitates the typesetting and formatting of finished translations for printing and distribution.",
   },
@@ -180,10 +188,8 @@ export const tools = {
       "USFM Linter is a tool that allows us to check USFM for common errors, such as missing or incorrect markup, or for missing or incorrect text.",
   },
   audioBiel: {
-    title: "BIEL Mobile App",
+    title: "Audio BIEL",
     dataName: "audioBiel",
-    icon: yieldIcon,
-    inProgress: true,
     description:
       "Audio BIEL (Bible In Every Language) houses our audio used as source material in oral translation projects as well as some finished translations.",
     linkOut: "https://audio.bibleineverylanguage.org/",
@@ -203,18 +209,11 @@ export const tools = {
       "This is our website for consuming the translations produced by our Deaf Owned Translation (DOT) process.",
     linkOut: "https://slbible.com/",
   },
-  textToSpeechGen: {
-    title: "Text-to-Speech Generator",
-    dataName: "ttsGen",
-    icon: yieldIcon,
-    description:
-      "Text-to-Speech Generator is a tool that allows us to generate audio from text.",
-    inProgress: true,
-  },
   handwritingRecognition: {
     title: "Transcriber (HTR)",
     dataName: "handwritingRecognition",
     icon: yieldIcon,
+    inProgress: true,
     description:
       "Translation work is sometimes still done via hand where technology is not available or conducive to use. We are experimenting with ways to digitize this handwritten text to speed up the production process as well as have the translation data available for safe keeping.",
   },
@@ -223,14 +222,8 @@ export const tools = {
     dataName: "mobileScanner",
     icon: yieldIcon,
     inProgress: true,
-    description: "",
-  },
-  aiMasking: {
-    title: "AI Masking Tool",
-    dataName: "aiMasking",
-    icon: yieldIcon,
-    inProgress: true,
-    description: "",
+    description:
+      "Scanner lets a translator scan and upload handwritten Scripture from a phone, getting pages into our systems without specialized equipment.",
   },
   publicDataApi: {
     title: "Public Data API",
@@ -241,8 +234,8 @@ export const tools = {
   aqua: {
     title: "AQuA",
     dataName: "aqua",
-    icon: yieldIcon,
-    inProgress: true,
+    icon: externalIcon,
+    external: true,
     description:
       "AQuA is an AI‑based quality‑assurance system developed by SIL, which Wycliffe Associates has evaluated and experimented with as a potential external tool for assessing Scripture translation quality, especially in the context of AI drafting and checking.",
   },
@@ -251,8 +244,8 @@ export const tools = {
     dataName: "greekRoom",
     description:
       "Greek Room is an external, open‑source translation analysis tool used by WA to evaluate Scripture translations through spell checking, phonetic similarity, and word alignment against reference texts, particularly for low‑resource languages.",
-    icon: yieldIcon,
-    inProgress: true,
+    icon: externalIcon,
+    external: true,
   },
   interpresure: {
     title: "InterpreSure",
@@ -270,8 +263,30 @@ export const tools = {
     icon: yieldIcon,
     inProgress: true,
   },
+  bielMobileApp: {
+    title: "BIEL Mobile App",
+    dataName: "bielMobileApp",
+    icon: yieldIcon,
+    inProgress: true,
+    description:
+      "The BIEL Mobile App is a Scripture reader and audio player for mobile devices. It lets readers read published Scripture, hear it as audio, and use it offline where mobile service is unreliable. It serves the language communities receiving finished translations, particularly where low literacy means a text-only Bible reaches few people.",
+  },
+  audioPublishingPipeline: {
+    title: "Audio Publishing Pipeline",
+    dataName: "audioPublishingPipeline",
+    icon: yieldIcon,
+    inProgress: true,
+    description:
+      "The Audio Publishing Pipeline moves approved audio Scripture from translation to publication, receiving recordings from BTT-Recorder and Orature, carrying them to a publishable state, and delivering them into the BIEL Mobile App.",
+  },
+  sunTrainingApp: {
+    title: "SUN Training App",
+    dataName: "sunTrainingApp",
+    description:
+      "SUN is a symbol-based writing system that lets non-readers access Scripture. The SUN Training App is a mobile training and teaching application designed to help facilitators, trainers, and users learn SUN through structured lessons, symbol recognition exercises, flash cards, and quizzes that reinforce learned concepts.",
+  },
   scriptureEditor: {
-    title: "SEFER",
+    title: "Sefer",
     dataName: "scriptureEditor",
     description:
       "The Scripture Editor for Refinement is a web‑based collaborative editor designed to support teams in refining completed Bible translations, enabling project‑wide editing, USFM cleanup, and alignment with established refinement and quality‑assurance processes prior to publication.",
@@ -331,7 +346,7 @@ const content: ContentType = {
         tools: [
           tools.writer,
           tools.orature,
-          tools.nllb,
+          tools.wade,
           tools.spotlight,
           tools.vmast,
           tools.doc,
@@ -413,7 +428,7 @@ const content: ContentType = {
       1: {
         title: "Step 1: <br /> Repo Consolidation",
         description:
-          "We consolidate individual book repositories from BBT-Writer into a single USFM repo containing all the books. We also standardize usfm markers and file information.",
+          "We consolidate individual book repositories from BTT-Writer into a single USFM repo containing all the books. We also standardize usfm markers and file information.",
         tools: [
           tools.biel,
           tools.doc,
@@ -432,7 +447,6 @@ const content: ContentType = {
           tools.sab,
           tools.usfmConverter,
           tools.usfmLinter,
-          tools.textToSpeechGen,
         ],
       },
       3: {
@@ -440,13 +454,12 @@ const content: ContentType = {
         description:
           "Most completed translations are available on Bible in Every Language and DOC. Once refined, Scripture products can be published in the format(s) desired by the language community. Formats include printed copies, text and/or audio apps, and sign language videos.",
         tools: [
-          tools.audioBiel,
           tools.biel,
+          tools.bielMobileApp,
           tools.doc,
           tools.dotApp,
           tools.dotWeb,
           tools.ptxPrint,
-          tools.textToSpeechGen,
         ],
       },
     },

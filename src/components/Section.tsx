@@ -55,7 +55,7 @@ export function Section(props: SectionProps) {
                 <div
                   class={`step-tool-inner ${
                     item().inProgress ? "inProgress" : ""
-                  }`}
+                  } ${item().external ? "external" : ""}`}
                 >
                   <span class="step-tool-icon" innerHTML={item().icon || ""} />
                   <span class="step-tool-text">{item().title}</span>

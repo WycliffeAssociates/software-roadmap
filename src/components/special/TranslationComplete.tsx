@@ -35,11 +35,11 @@ export function Section2Tools() {
           <div
             class="step-tool"
             data-js="step-tool"
-            data-tool-name={tools.aiMasking.dataName}
+            data-tool-name={tools.audioMasking.dataName}
           >
             <div class="step-tool-inner inProgress">
               <span innerHTML={yieldIcon} class="step-tool-icon" />
-              {tools.aiMasking.title}
+              {tools.audioMasking.title}
             </div>
           </div>
           <div
@@ -49,6 +49,15 @@ export function Section2Tools() {
           >
             <div class="step-tool-inner">
               <span class="step-tool-text"> {tools.wacs.title} </span>
+            </div>
+          </div>
+          <div
+            class="step-tool"
+            data-js="step-tool"
+            data-tool-name={tools.sunTrainingApp.dataName}
+          >
+            <div class="step-tool-inner">
+              <span class="step-tool-text"> {tools.sunTrainingApp.title} </span>
             </div>
           </div>
         </div>
