@@ -510,7 +510,8 @@ export function updateTools(sectionEl: HTMLElement, newTools: Array<ToolType>) {
         tool.icon,
         tool.title,
         tool.dataName,
-        tool.inProgress
+        tool.inProgress,
+        tool.external
       );
       tl.set(newTool, {x: "20px", opacity: "0"}, "0");
 
@@ -532,14 +533,17 @@ function getNewStepTool(
   icon: string | null | undefined,
   toolName: string,
   toolDataName: string,
-  inProgress: boolean = false
+  inProgress: boolean = false,
+  external: boolean = false
 ) {
   const newLiTool = document.createElement("li");
   newLiTool.setAttribute("class", "step-tool");
   newLiTool.setAttribute("data-tool-name", toolDataName);
   newLiTool.setAttribute("data-js", "step-tool");
   newLiTool.innerHTML = `
-    <div class="step-tool-inner ${inProgress ? "inProgress" : ""}">
+    <div class="step-tool-inner ${inProgress ? "inProgress" : ""} ${
+    external ? "external" : ""
+  }">
   <span class="step-tool-icon">
                   ${icon || ""}
                 </span>
